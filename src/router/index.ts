@@ -7,11 +7,11 @@ import LeadsView from '../views/Leads.vue'
 import ConfigView from '../views/Config.vue'
 
 const routes = [
-  { path: '/', component: DashboardView },
-  { path: '/pipeline', component: PipelineView },
-  { path: '/conversas', component: ConversasView },
-  { path: '/leads', component: LeadsView },
-  { path: '/configuracoes', component: ConfigView }
+  { path: '/', name: 'Dashboard', component: DashboardView },
+  { path: '/pipeline', name: 'pipeline', component: PipelineView },
+  { path: '/conversas', name: 'conversas', component: ConversasView },
+  { path: '/leads', name: 'lead', component: LeadsView },
+  { path: '/configuracoes', name: 'config', component: ConfigView }
 ]
 
 export default createRouter({

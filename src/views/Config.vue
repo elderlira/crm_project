@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
+import { ref } from 'vue'
 import CarbonCalendar from '~icons/carbon/calendar'
 
 const itemCard = ref([
@@ -71,7 +71,7 @@ const itemCard = ref([
         color: 'white',
         size: '2em',
         icon: CarbonCalendar,
-        route: { name: 'pipeline'}
+        route: { name: 'reasonForClousure'}
     },
     {
         title: 'Template',

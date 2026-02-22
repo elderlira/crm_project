@@ -56,7 +56,7 @@ const itemCard = ref([
         color: 'white',
         size: '2em',
         icon: CarbonCalendar,
-        route: { name: 'pipeline' }
+        route: { name: 'label' }
     },
     {
         title: 'Motivos de Fechamento',

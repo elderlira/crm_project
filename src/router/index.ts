@@ -6,6 +6,7 @@ import ConversasView from '../views/Talks.vue'
 import LeadsView from '../views/Leads.vue'
 import ConfigView from '../views/Config.vue'
 import ReasonForClousure from '../views/config/ReasonForClousure.vue'
+import Label from '../views/config/Label.vue'
 
 const routes = [
   { path: '/', name: 'Dashboard', component: DashboardView },
@@ -13,7 +14,8 @@ const routes = [
   { path: '/conversas', name: 'talks', component: ConversasView },
   { path: '/leads', name: 'lead', component: LeadsView },
   { path: '/configuracoes', name: 'config', component: ConfigView },
-  { path: '/configuracao-motivo-fechamento', name: 'reasonForClousure', component: ReasonForClousure}
+  { path: '/configuracao-motivo-fechamento', name: 'reasonForClousure', component: ReasonForClousure},
+  { path: '/etiquetas', name: 'label', component: Label}
 ]
 
 export default createRouter({

@@ -1,26 +1,26 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vuetify from 'vite-plugin-vuetify'
 import Components from 'unplugin-vue-components/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    vuetify({ autoImport: true }),
     Components({
       resolvers: [
-        // 2. Resolver ícones automaticamente
         IconsResolver({
-          prefix: 'i', // prefixo para usar no template: <i-mdi-account />
+          prefix: 'i',
         }),
       ],
-      dts: true, // Gera componentes.d.ts para TypeSupport
+      dts: true,
     }),
-    // 3. Plugin de ícones
     Icons({
       compiler: 'vue3',
-      autoInstall: true, // Instala o pacote de ícones automaticamente se faltar
+      autoInstall: true,
     }),
   ],
 })
+

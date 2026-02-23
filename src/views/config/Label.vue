@@ -2,11 +2,20 @@
     <div>
         <v-sheet border rounded>
             <v-data-table :headers="headers" :hide-default-footer="books.length < 11" :items="books">
+                <template v-slot:item.color="{ item }">
+                    <div class="color-cell" :style="{ backgroundColor: item.color }">
+                        {{ item.color }}
+                    </div>
+                </template>
+                <template v-slot:item.ativo="{ item }">
+                    <v-icon :color="item.ativo === true ? 'success' : 'error'">
+                        {{ item.ativo === true ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+                    </v-icon>
+                </template>
                 <template v-slot:top>
                     <v-toolbar flat>
                         <v-toolbar-title>
                             <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
-
                             Etiquetas
                         </v-toolbar-title>
 
@@ -14,6 +23,7 @@
                             style="background-color: dodgerblue;"></v-btn>
                     </v-toolbar>
                 </template>
+
 
                 <template v-slot:item.title="{ value }">
                     <v-chip :text="value" border="thin opacity-25" prepend-icon="mdi-book" label>
@@ -25,10 +35,9 @@
 
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex ga-2 justify-end">
-                        <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="edit(item.id)"></v-icon>
+                        <v-icon color="success" icon="mdi-pencil" size="small" @click="edit(item.id)"></v-icon>
 
-                        <v-icon color="medium-emphasis" icon="mdi-delete" size="small"
-                            @click="remove(item.id)"></v-icon>
+                        <v-icon color="error" icon="mdi-delete" size="small" @click="remove(item.id)"></v-icon>
                     </div>
                 </template>
 
@@ -50,8 +59,20 @@
                     </v-row>
                     <v-row>
                         <v-col cols="12" md="12">
-                            <v-color></v-color>
-                            <v-text-field v-model="formModel.cor"></v-text-field>
+                            <v-menu v-model="menu" :close-on-content-click="false" location="left">
+                                <template #activator="{ props }">
+                                    <v-text-field :label="formModel.color" append-inner-icon="mdi-eyedropper"
+                                        @click:append-inner="menu = true"></v-text-field>
+                                </template>
+
+                                <v-card>
+                                    <v-color-picker v-model="formModel.color" hide-inputs />
+                                </v-card>
+                            </v-menu>
+
+                            <v-card class="pa-6 d-flex align-center justify-space-between" color="grey-lighten-3"
+                                rounded="lg" elevation="0">
+                            </v-card>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -62,9 +83,6 @@
                                 </v-toolbar-title>
                                 <v-switch v-model="formModel.ativo" color='primary' hide-details inset></v-switch>
                             </v-container>
-
-
-                            <!-- <v-text-field v-model="formModel.ativo" label="ativo"></v-text-field> -->
                         </v-col>
                     </v-row>
                 </template>
@@ -84,15 +102,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, shallowRef, toRef } from 'vue'
+import { onMounted, ref, shallowRef, toRef, reactive } from 'vue'
+import { useBackgroundColor } from 'vuetify/lib/composables/color'
 
 const currentYear = new Date().getFullYear()
 
 function createNewRecord() {
     return {
         etiqueta: '',
-        cor: '',
+        color: '',
         ativo: ref(true),
+        actions: ''
     }
 }
 
@@ -100,18 +120,15 @@ const books = ref([])
 const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
 const isEditing = toRef(() => !!formModel.value.id)
+const menu = ref(false)
 
 const headers = [
     { title: 'Id', key: 'id', align: 'start' },
     { title: 'Etiqueta', key: 'etiqueta' },
-    { title: 'Cor', key: 'cor' },
+    { title: 'Cor', key: 'color' },
     { title: 'Ativo', key: 'ativo', align: 'end' },
-    { title: 'Ações', key: 'actions', align: 'end', sortable: false },
+    { title: 'Ações', key: 'actions', align: 'end', sortable: false, color: '#792828' },
 ]
-
-// const funilItens = ['CALL AGENDADA', 'SEM FUNIL', 'CALL REALIZADA', 'LEADS RETORNO']
-
-// const departamentosItens = ['DEPARTAMENTO 1', 'DEPARTAMENTO 2', 'DEPARTAMENTO 3']
 
 onMounted(() => {
     reset()
@@ -128,14 +145,12 @@ function edit(id) {
     formModel.value = {
         id: found.id,
         etiqueta: found.etiqueta,
-        cor: found.cor,
+        color: found.color,
         ativo: found.ativo,
     }
 
     dialog.value = true
 }
-
-console.log(formModel.value)
 
 function remove(id) {
     const index = books.value.findIndex(book => book.id === id)
@@ -158,12 +173,24 @@ function reset() {
     dialog.value = false
     formModel.value = createNewRecord()
     books.value = [
-        { id: 1, etiqueta: 'etiqueta 1', cor: 'call agendada', ativo: true },
-        { id: 2, etiqueta: 'etiqueta 2', cor: 'call realizada', ativo: false },
-        { id: 3, etiqueta: 'etiqueta 3', cor: 'retorno', ativo: false },
-        { id: 4, etiqueta: 'etiqueta 4', cor: 'sem cor', ativo: true },
-        { id: 5, etiqueta: 'etiqueta 5', cor: 'sem agenda', ativo: true },
+        { id: 1, etiqueta: 'etiqueta 1', color: '#792828', ativo: true },
+        { id: 2, etiqueta: 'etiqueta 2', color: 'green', ativo: false },
+        { id: 3, etiqueta: 'etiqueta 3', color: 'red', ativo: false },
+        { id: 4, etiqueta: 'etiqueta 4', color: '#792825', ativo: true },
+        { id: 5, etiqueta: 'etiqueta 5', color: '#792828', ativo: true },
     ]
 }
 
 </script>
+
+<style>
+.color-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+</style>

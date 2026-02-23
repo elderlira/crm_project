@@ -62,7 +62,8 @@
                             <v-menu v-model="menu" :close-on-content-click="false" location="left">
                                 <template #activator="{ props }">
                                     <v-text-field :label="formModel.color" append-inner-icon="mdi-eyedropper"
-                                        @click:append-inner="menu = true"></v-text-field>
+                                        @click:append-inner="menu = true" :color="formModel.color"
+                                        :bg-color="formModel.color"></v-text-field>
                                 </template>
 
                                 <v-card>

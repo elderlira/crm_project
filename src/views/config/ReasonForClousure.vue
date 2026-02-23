@@ -21,12 +21,17 @@
           </template>
         </v-chip>
       </template>
+      <template v-slot:item.ativo="{ item }">
+        <v-icon :color="item.ativo ? 'success' : 'error'">
+          {{ item.ativo ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+        </v-icon>
+      </template>
 
       <template v-slot:item.actions="{ item }">
         <div class="d-flex ga-2 justify-end">
-          <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="edit(item.id)"></v-icon>
+          <v-icon color="success" icon="mdi-pencil" size="small" @click="edit(item.id)"></v-icon>
 
-          <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="remove(item.id)"></v-icon>
+          <v-icon color="error" icon="mdi-delete" size="small" @click="remove(item.id)"></v-icon>
         </div>
       </template>
 
@@ -53,6 +58,13 @@
           <v-col cols="12" md="6">
             <v-select v-model="formModel.departamento" :items="departamentosItens" label="Departamentos"></v-select>
           </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            {{ formModel.ativo ? 'Ativo' : 'Inativo' }}
+            <v-switch v-model="formModel.ativo" color='primary' hide-details inset></v-switch>
+          </v-col>
+
         </v-row>
         <v-row>
           <v-col cols="12" md="12">
@@ -85,6 +97,7 @@ function createNewRecord() {
     motivo: '',
     funil: '',
     departamento: '',
+    ativo: ref(false),
     mensagem: '',
   }
 }
@@ -98,8 +111,9 @@ const headers = [
   { title: 'Id', key: 'id', align: 'start' },
   { title: 'Motivo', key: 'motivo' },
   { title: 'Funil', key: 'funil' },
-  { title: 'Departamentos', key: 'departamento', align: 'end' },
-  { title: 'Mensagem de fechamento', key: 'mensagem', align: 'end' },
+  { title: 'Departamentos', key: 'departamento', align: 'ceenter' },
+  { title: 'Ativo', key: 'ativo', align: 'center' },
+  { title: 'Mensagem de fechamento', key: 'mensagem', align: 'center' },
   { title: 'Ações', key: 'actions', align: 'end', sortable: false },
 ]
 
@@ -124,6 +138,7 @@ function edit(id) {
     motivo: found.motivo,
     funil: found.funil,
     departamento: found.departamento,
+    ativo: found.ativo,
     mensagem: found.mensagem,
   }
 
@@ -151,11 +166,11 @@ function reset() {
   dialog.value = false
   formModel.value = createNewRecord()
   books.value = [
-    { id: 1, motivo: 'fechamento 1', funil: 'call agendada', departamento: 'Fiction', mensagem: 'texto 1' },
-    { id: 2, motivo: 'fechamento 2', funil: 'call realizada', departamento: 'Dystopian', mensagem: 'texto 2' },
-    { id: 3, motivo: 'fechamento 3', funil: 'retorno', departamento: 'Fiction', mensagem: 'texto 3' },
-    { id: 4, motivo: 'fechamento 4', funil: 'sem funil', departamento: 'Non-Fiction', mensagem: 'texto 4' },
-    { id: 5, motivo: 'fechamento 5', funil: 'sem agenda', departamento: 'Sci-Fi', mensagem: 'texto 5' },
+    { id: 1, motivo: 'fechamento 1', funil: 'call agendada', departamento: 'Fiction', ativo: true, mensagem: 'texto 1' },
+    { id: 2, motivo: 'fechamento 2', funil: 'call realizada', departamento: 'Dystopian', ativo: true, mensagem: 'texto 2' },
+    { id: 3, motivo: 'fechamento 3', funil: 'retorno', departamento: 'Fiction', ativo: true, mensagem: 'texto 3' },
+    { id: 4, motivo: 'fechamento 4', funil: 'sem funil', departamento: 'Non-Fiction', ativo: true, mensagem: 'texto 4' },
+    { id: 5, motivo: 'fechamento 5', funil: 'sem agenda', departamento: 'Sci-Fi', ativo: true, mensagem: 'texto 5' },
   ]
 }
 

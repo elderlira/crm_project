@@ -1,20 +1,7 @@
-<script setup lang="ts">
-defineProps<{
-  title: string
-  value: string | number
-  color: string
-  icon: string
-}>()
-</script>
-
 <template>
   <v-card rounded="xl" elevation="3" class="pa-5 position-relative">
 
-    <v-avatar
-      size="44"
-      :style="{ backgroundColor: color }"
-      class="metric-avatar"
-    >
+    <v-avatar size="44" :style="{ backgroundColor: color }" class="metric-avatar">
       <v-icon color="white">
         {{ icon }}
       </v-icon>
@@ -31,6 +18,15 @@ defineProps<{
 
   </v-card>
 </template>
+
+<script setup lang="ts">
+defineProps<{
+  title: string
+  value: string | number
+  color: string
+  icon: string
+}>()
+</script>
 
 <style scoped>
 .metric-avatar {

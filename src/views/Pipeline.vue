@@ -3,7 +3,7 @@
 
     <!-- HEADER -->
     <div class="mb-8">
-      <h1 class="text-h5 font-weight-black mb-2">Pipeline de Vendas</h1>
+      <h1 class="text-h4 font-weight-black mb-2">Pipeline de Vendas</h1>
       <p class="text-medium-emphasis">
         Acompanhe sua operação comercial em tempo real
       </p>

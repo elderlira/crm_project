@@ -1,31 +1,125 @@
 <template>
     <div class="all">
         <div class="flex w-full">
-            <h1 class="w-full text-[30px] text-center text-white">
+            <h1 class="w-full text-[40px] text-center text-white mb-10 mt-10">
                 Configurações
             </h1>
         </div>
-        <div class="grid gap-6 
+        <v-card color="#e8f1f2" class="pt-10  ml-2 mr-2">
+            <div class="grid gap-6 
             grid-cols-1 
             sm:grid-cols-2 
             lg:grid-cols-3 
-            xl:grid-cols-4">
+            xl:grid-cols-4
+            mr-5
+            ">
+                <div v-for="(item, index) in atendentCardItens" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
+           hover:scale-105 transition duration-300 ml-6 mr-2 mb-10">
+                    <RouterLink :to="item.route" class="flex flex-col gap-3">
+                        <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
 
-            <div v-for="(item, index) in itemCard" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
-           hover:scale-105 transition duration-300">
-                <RouterLink :to="item.route" class="flex flex-col gap-3">
-                    <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
+                        <h2 class="text-lg font-semibold">
+                            {{ item.title }}
+                        </h2>
 
-                    <h2 class="text-lg font-semibold">
-                        {{ item.title }}
-                    </h2>
-
-                    <p class="text-sm text-gray-500">
-                        {{ item.subtitle }}
-                    </p>
-                </RouterLink>
+                        <p class="text-sm text-gray-500">
+                            {{ item.subtitle }}
+                        </p>
+                    </RouterLink>
+                </div>
             </div>
-        </div>
+        </v-card>
+        <!-- <v-row>
+            <v-col v-for="(item, id) in atendentCardItens" :key="id" cols="12" md="6" sm="1">
+                <RouterLink :to="item.route" class="flex flex-col gap-3">
+                    <v-card class="mx-auto w-50 ">
+                        <v-card-item>
+                            <div>
+                                {{ item.title }}
+                            </div>
+                            <div>
+                                {{ item.subtitle }}
+                            </div>
+                        </v-card-item>
+                    </v-card>
+                </RouterLink>
+            </v-col>
+        </v-row> -->
+
+        <v-card color="#e8f1f2" class="pt-10 mt-2 ml-2 mr-2">
+            <div class="grid gap-6 
+            grid-cols-1 
+            sm:grid-cols-2 
+            lg:grid-cols-3 
+            xl:grid-cols-4
+            mr-5
+            ">
+                <div v-for="(item, index) in salesItens" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
+           hover:scale-105 transition duration-300 ml-6 mr-2 mb-10">
+                    <RouterLink :to="item.route" class="flex flex-col gap-3">
+                        <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
+
+                        <h2 class="text-lg font-semibold">
+                            {{ item.title }}
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            {{ item.subtitle }}
+                        </p>
+                    </RouterLink>
+                </div>
+            </div>
+        </v-card>
+
+        <v-card color="#e8f1f2" class="pt-10 mt-2 ml-2 mr-2">
+            <div class="grid gap-6 
+            grid-cols-1 
+            sm:grid-cols-2 
+            lg:grid-cols-3 
+            xl:grid-cols-4
+            mr-5
+            ">
+                <div v-for="(item, index) in userCardItens" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
+           hover:scale-105 transition duration-300 ml-6 mr-2 mb-10">
+                    <RouterLink :to="item.route" class="flex flex-col gap-3">
+                        <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
+
+                        <h2 class="text-lg font-semibold">
+                            {{ item.title }}
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            {{ item.subtitle }}
+                        </p>
+                    </RouterLink>
+                </div>
+            </div>
+        </v-card>
+
+        <!-- <v-card color="#e8f1f2" class="pt-10 mt-2 ml-2 mr-2">
+            <div class="grid gap-6 
+            grid-cols-1 
+            sm:grid-cols-2 
+            lg:grid-cols-3 
+            xl:grid-cols-4
+            mr-5
+            ">
+                <div v-for="(item, index) in userCardItens" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
+           hover:scale-105 transition duration-300 ml-6 mr-2 mb-10">
+                    <RouterLink :to="item.route" class="flex flex-col gap-3">
+                        <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
+
+                        <h2 class="text-lg font-semibold">
+                            {{ item.title }}
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            {{ item.subtitle }}
+                        </p>
+                    </RouterLink>
+                </div>
+            </div>
+        </v-card> -->
     </div>
 </template>
 
@@ -33,7 +127,7 @@
 import { ref } from 'vue'
 import CarbonCalendar from '~icons/carbon/calendar'
 
-const itemCard = ref([
+const atendentCardItens = ref([
     {
         title: 'Plaug-in',
         subtitle: 'Configurar os plug-in',
@@ -75,6 +169,60 @@ const itemCard = ref([
         route: { name: 'pipeline' }
     },
 ])
+
+const salesItens = [
+    {
+        title: 'Status Cliente',
+        subtitle: 'Configurar os status para leads',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'clientStatus' }
+    },
+]
+
+const userCardItens = [
+    {
+        title: 'Avaliação',
+        subtitle: 'Cadastro de avaliação',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'avaliation' }
+    },
+    {
+        title: 'Usuário',
+        subtitle: 'Cadastrar usuário',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'userRegister' }
+    },
+    {
+        title: 'Departamentos',
+        subtitle: 'Cadastrar departamentos',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'departament' }
+    },
+    {
+        title: 'Campos Customizados',
+        subtitle: 'Cadastrar campos customizados',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'customizeField' }
+    },
+    {
+        title: 'Perfil',
+        subtitle: 'Cadastrar perfil',
+        color: 'white',
+        size: '2em',
+        icon: CarbonCalendar,
+        route: { name: 'profile' }
+    },
+]
 
 
 </script>

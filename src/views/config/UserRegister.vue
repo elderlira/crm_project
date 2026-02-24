@@ -1,0 +1,3 @@
+<template>
+    <h1>Cadastro de usuario</h1>
+</template>

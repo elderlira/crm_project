@@ -13,7 +13,7 @@ const toggleSidebar = () => {
   <div class="flex h-screen overflow-hidden">
     <Sidebar :isOpen="isOpen" @toggle="isOpen = !isOpen" />
     
-    <main class="flex-1 bg-gray-100  overflow-auto">
+    <main class="flex-1 bg-gray-100 overflow-auto">
       <router-view />
     </main>
   </div>

@@ -5,19 +5,29 @@ defineProps<{
 </script>
 
 <template>
-  <div class="bg-white rounded-xl shadow-md p-6">
-    
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="font-semibold text-gray-700">
+  <v-card
+    rounded="xl"
+    elevation="3"
+    class="pa-5"
+  >
+    <!-- Header -->
+    <div class="d-flex justify-space-between align-center mb-4">
+      <div class="text-subtitle-1 font-weight-semibold">
         {{ title }}
-      </h3>
-      <span class="text-gray-400">≡</span>
+      </div>
+
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+      >
+        <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn>
     </div>
 
-    <!-- IMPORTANTE -->
-    <div class="w-full" style="height:300px;">
+    <!-- Área do gráfico -->
+    <div style="height: 300px;">
       <slot />
     </div>
-
-  </div>
+  </v-card>
 </template>

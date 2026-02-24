@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-5">
 
     <!-- FILTROS -->
-    <v-row class="mb-4">
-      <v-col cols="12">
+    <v-row class="mb-2">
+      <v-col cols="10">
         <DashboardFilters />
       </v-col>
     </v-row>
@@ -19,10 +19,11 @@
         lg="2"
       >
         <MetricCard
-          :title="metric.title"
-          :value="metric.value"
-          :color="metric.color"
-        />
+    :title="metric.title"
+    :value="metric.value"
+    :color="metric.color"
+    :icon="metric.icon"
+  />
       </v-col>
     </v-row>
 
@@ -70,16 +71,16 @@ import DashboardFilters from '/src/views/dashboards/DashboardFilters.vue'
 
 /* ================= METRICS ================= */
 const metrics = [
-  { title: 'Total de atendimentos', value: 12, color: 'green' },
-  { title: 'Receptivos', value: 6, color: 'red' },
-  { title: 'Ativos', value: 6, color: 'blue' },
-  { title: 'Pendentes', value: 0, color: 'indigo' },
-  { title: 'Atendentes', value: 3, color: 'cyan' },
-  { title: 'Total contatos', value: 741, color: 'orange' },
-  { title: 'Novos contatos', value: 7, color: 'teal' },
-  { title: 'Contatos ativos', value: 7, color: 'purple' },
-  { title: 'TMA', value: '5h 21min', color: 'yellow' },
-  { title: '1° resposta', value: '19h 36min', color: 'pink' },
+  { title: 'Total de atendimentos', value: 12, color: 'green', icon: 'mdi-chart-line' },
+  { title: 'Receptivos', value: 6, color: 'red', icon: 'mdi-phone-incoming' },
+  { title: 'Ativos', value: 6, color: 'blue', icon: 'mdi-phone-outgoing' },
+  { title: 'Pendentes', value: 0, color: 'indigo', icon: 'mdi-message-reply-text' },
+  { title: 'Atendentes', value: 3, color: 'yellow', icon: 'mdi-account-group' },
+  { title: 'Total contatos', value: 741, color: 'orange', icon: 'mdi-account-multiple' },
+  { title: 'Novos contatos', value: 7, color: 'teal', icon: 'mdi-account-plus' },
+  { title: 'Contatos ativos', value: 7, color: 'purple', icon: 'mdi-account-check' },
+  { title: 'TMA', value: '5h 21min', color: 'cyan', icon: 'mdi-timer-outline' },
+  { title: '1° resposta', value: '19h 36min', color: 'pink', icon: 'mdi-clock-outline' },
 ]
 
 /* ================= GRÁFICOS ================= */

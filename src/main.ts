@@ -48,11 +48,24 @@ app.mount('#app')
 const vuetify = createVuetify({
     components,
     directives,
-    theme: {
-      defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          blue: '#2563eb',
+          green: '#16a34a',
+          red: '#dc2626',
+          orange: '#f59e0b',
+          cyan: '#0ea5e9',
+          indigo: '#4f46e5',
+          teal: '#14b8a6',
+          purple: '#8b5cf6',
+          yellow: '#eab308',
+          pink: '#ec4899',
+        },
+      },
     },
-  })
-
+  },
+)
 
 createApp(App)
 .use(router)

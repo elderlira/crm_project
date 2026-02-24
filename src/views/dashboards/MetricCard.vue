@@ -1,49 +1,41 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{
+defineProps<{
   title: string
   value: string | number
   color: string
+  icon: string
 }>()
-
-const bgColor = computed(() => {
-  const map: Record<string, string> = {
-  green: 'bg-green-500',
-  red: 'bg-red-500',
-  blue: 'bg-blue-500',
-  indigo: 'bg-indigo-500',
-  purple: 'bg-purple-500',
-  yellow: 'bg-yellow-500',
-  pink: 'bg-pink-500',
-  teal: 'bg-teal-500',
-  orange: 'bg-orange-500',
-  cyan: 'bg-cyan-500'
-}
-
-  return map[props.color] || 'bg-gray-500'
-})
 </script>
-    
-    <template>
-      <div class="bg-white rounded-xl shadow-md p-6 relative">
-        
-        <!-- Ícone colorido -->
-        <div
-        class="absolute -top-4 left-6 w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md"
-        :class="bgColor"
-        >
-        ●
-        </div>
-    
-        <div class="mt-6 text-center">
-          <h2 class="text-3xl font-semibold text-gray-700">
-            {{ value }}
-          </h2>
-          <p class="text-gray-500 mt-2 text-sm">
-            {{ title }}
-          </p>
-        </div>
-    
+
+<template>
+  <v-card rounded="xl" elevation="3" class="pa-5 position-relative">
+
+    <v-avatar
+      size="44"
+      :style="{ backgroundColor: color }"
+      class="metric-avatar"
+    >
+      <v-icon color="white">
+        {{ icon }}
+      </v-icon>
+    </v-avatar>
+
+    <div class="text-center mt-6">
+      <div class="text-h4 font-weight-bold">
+        {{ value }}
       </div>
-    </template>
+      <div class="text-subtitle-2 text-medium-emphasis mt-2">
+        {{ title }}
+      </div>
+    </div>
+
+  </v-card>
+</template>
+
+<style scoped>
+.metric-avatar {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+}
+</style>

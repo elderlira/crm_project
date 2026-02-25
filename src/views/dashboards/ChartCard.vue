@@ -1,35 +1,38 @@
 <template>
   <div>
-    <v-row class="mt-6">
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" elevation="3" class="pa-5">
-          <div class="text-subtitle-1 font-weight-bold mb-4">
-            Atendimento por canal
-          </div>
-          <v-chart :option="Channel" autoresize />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" elevation="3" class="pa-5">
-          <div class="text-subtitle-1 font-weight-bold mb-4">
-            Motivo de fechamento
-          </div>
-          <v-chart :option="Closing" autoresize />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" elevation="3" class="pa-5">
-          <div class="text-subtitle-1 font-weight-bold mb-4">
-            Atendimento por dia
-          </div>
-          <v-chart :option="chartOption1" autoresize />
-        </v-card>
-      </v-col>
+    <v-row>
+      <v-col cols="12">
 
-    </v-row>
-    <v-row class="mt-4">
+        <v-row class="mt-6">
+          <v-col cols="12" md="4">
+            <v-card rounded="xl" elevation="3" class="pa-5">
+              <div class="text-subtitle-1 font-weight-bold mb-4">
+                Atendimento por canal
+              </div>
+              <v-chart :option="Channel" autoresize />
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-card rounded="xl" elevation="3" class="pa-5">
+              <div class="text-subtitle-1 font-weight-bold mb-4">
+                Motivo de fechamento
+              </div>
+              <v-chart :option="Closing" autoresize />
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-card rounded="xl" elevation="3" class="pa-5">
+              <div class="text-subtitle-1 font-weight-bold mb-4">
+                Atendimento por dia
+              </div>
+              <v-chart :option="chartOption1" autoresize />
+            </v-card>
+          </v-col>
 
+        </v-row>
+      </v-col>
     </v-row>
+
     <v-row class="mt-6">
       <v-col cols="12" md="4">
         <v-card rounded="xl" elevation="3" class="pa-5">
@@ -55,11 +58,6 @@
           <v-chart :option="chartOption2" autoresize />
         </v-card>
       </v-col>
-    </v-row>
-    <v-row class="mt-6">
-
-
-
     </v-row>
   </div>
 </template>

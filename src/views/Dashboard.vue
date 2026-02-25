@@ -1,23 +1,16 @@
 <template>
   <v-container fluid class="pa-5">
 
-    <!-- FILTROS -->
-    <v-row class="mb-2">
-      <v-col cols="10">
-        <DashboardFilters @valorAEnviar="valorRecebido" />
-      </v-col>
-    </v-row>
+    <DashboardFilters @valorAEnviar="valorRecebido" />
 
 
     <Grafics :filterValue="filterValue" />
 
-    <v-row>
-      <v-col cols="12">
-        <ChartCard title="Evolução atendimentos">
-          <v-chart />
-        </ChartCard>
-      </v-col>
-    </v-row>
+
+    <ChartCard title="Evolução atendimentos">
+      <v-chart />
+    </ChartCard>
+
   </v-container>
 </template>
 

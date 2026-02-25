@@ -1,49 +1,59 @@
 <template>
-  <!-- Título -->
-  <div class="mb-6">
-    <div class="text-h4 font-weight-bold">
-      Dashboard
+  <div>
+    <!-- Título -->
+    <div class="mb-6">
+      <div class="text-h4 font-weight-bold">
+        Dashboard
+      </div>
+      <div class="text-subtitle-2 text-medium-emphasis">
+        Acompanhe sua operação comercial em tempo real
+      </div>
     </div>
-    <div class="text-subtitle-2 text-medium-emphasis">
-      Acompanhe sua operação comercial em tempo real
-    </div>
-  </div>
 
-  <!-- Card de filtros -->
-  <v-card rounded="xl" elevation="3" class="pa-4">
+    <!-- Card de filtros -->
+    <v-row dense align="end" class="teste">
+      <v-col cols="12">
+        <v-card rounded="xl" elevation="3" class="pa-4">
 
-    <v-row dense align="end">
+          <v-col cols="12 mt-5">
+            <v-row>
+              <v-col cols="12" lg="2" md="3" sm="12">
+                <v-text-field v-model="startDate" label="Data Início" type="datetime-local" variant="outlined"
+                  density="comfortable" />
+              </v-col>
 
-      <v-col cols="12" sm="6" md="3">
-        <v-text-field v-model="startDate" label="Data Início" type="datetime-local" variant="outlined"
-          density="comfortable" />
+              <v-col cols="12" lg="2" md="3" sm="12">
+                <v-text-field v-model="endDate" label="Data Fim" type="datetime-local" variant="outlined"
+                  density="comfortable" />
+              </v-col>
+
+              <v-col cols="12" lg="2" md="2" sm="12">
+                <v-select v-model="user" :items="users" label="Usuário" variant="outlined" density="comfortable"
+                  clearable />
+              </v-col>
+
+              <v-col cols="12" lg="2" md="2" sm="12">
+                <v-select v-model="department" :items="departments" label="Departamento" variant="outlined"
+                  density="comfortable" clearable />
+              </v-col>
+
+              <v-col cols="12" lg="2" md="2" sm="12">
+                <v-select v-model="channel" :items="channels" label="Canal" variant="outlined" density="comfortable"
+                  clearable />
+              </v-col>
+              <v-col cols="12" lg="2" md="6" sm="12" class="d-flex text-left">
+                <v-btn color="primary" size="large" @click="updateDashboard">
+                  Atualizar
+                </v-btn>
+              </v-col>
+            </v-row>
+
+          </v-col>
+        </v-card>
       </v-col>
 
-      <v-col cols="12" sm="6" md="3">
-        <v-text-field v-model="endDate" label="Data Fim" type="datetime-local" variant="outlined"
-          density="comfortable" />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-select v-model="user" :items="users" label="Usuário" variant="outlined" density="comfortable" clearable />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-select v-model="department" :items="departments" label="Departamento" variant="outlined"
-          density="comfortable" clearable />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-select v-model="channel" :items="channels" label="Canal" variant="outlined" density="comfortable"
-          clearable />
-      </v-col>
     </v-row>
-  </v-card>
-  <v-col cols="12" md="12" class="text-left">
-    <v-btn color="primary" size="large" class="mt-2" @click="updateDashboard">
-      Atualizar
-    </v-btn>
-  </v-col>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -88,3 +98,9 @@ const updateDashboard = () => {
 
 }
 </script>
+
+<style>
+.teste {
+  width: 100%;
+}
+</style>

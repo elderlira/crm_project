@@ -1,91 +1,66 @@
 <template>
   <div>
- <v-row class="mt-6">
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Atendimento por canal
-        </div>
-        <v-chart
-          :option="Channel"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Motivo de fechamento
-        </div>
-        <v-chart
-          :option="Closing"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
-  </v-row>
-  <v-row class="mt-6">
-    
-  </v-row>
-   <v-row class="mt-6">
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Atendimento por departamento
-        </div>
-        <v-chart
-          :option="Department"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Evolução atendimentos
-        </div>
-        <v-chart
-          :option="evolutionOption"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
-  </v-row>
+    <v-row class="mt-6">
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Atendimento por canal
+          </div>
+          <v-chart :option="Channel" autoresize />
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Motivo de fechamento
+          </div>
+          <v-chart :option="Closing" autoresize />
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Atendimento por dia
+          </div>
+          <v-chart :option="chartOption1" autoresize />
+        </v-card>
+      </v-col>
 
-  <v-row class="mt-6">
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Atendimento por dia
-        </div>
+    </v-row>
+    <v-row class="mt-4">
 
-        <v-chart
-          :option="chartOption1"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
+    </v-row>
+    <v-row class="mt-6">
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Atendimento por departamento
+          </div>
+          <v-chart :option="Department" autoresize />
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Evolução atendimentos
+          </div>
+          <v-chart :option="evolutionOption" autoresize />
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card rounded="xl" elevation="3" class="pa-5">
+          <div class="text-subtitle-1 font-weight-bold mb-4">
+            Performance por Atendente
+          </div>
+          <v-chart :option="chartOption2" autoresize />
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row class="mt-6">
 
-    <v-col cols="12" md="6">
-      <v-card rounded="xl" elevation="3" class="pa-5">
-        <div class="text-subtitle-1 font-weight-bold mb-4">
-          Performance por Atendente
-        </div>
 
-        <v-chart
-          :option="chartOption2"
-          style="height: 300px"
-          autoresize
-        />
-      </v-card>
-    </v-col>
 
-  </v-row>
+    </v-row>
   </div>
 </template>
 
@@ -93,7 +68,6 @@
 import { ref } from 'vue'
 import VChart from 'vue-echarts'
 
-// 👇 IMPORTANTE
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart, BarChart } from 'echarts/charts'
@@ -104,7 +78,10 @@ import {
   LegendComponent
 } from 'echarts/components'
 
-// 👇 REGISTRAR módulos
+const dataPie = [
+  { value: 2, name: 'Não informado' },
+  { value: 4, name: 'ABORDAGEM - SDR' }
+]
 echarts.use([
   CanvasRenderer,
   LineChart,
@@ -115,7 +92,6 @@ echarts.use([
   LegendComponent
 ])
 
-/* ============================= */
 const Channel = ref({
   tooltip: { trigger: 'item' },
   series: [
@@ -140,14 +116,16 @@ const Closing = ref({
 })
 const Department = ref({
   tooltip: { trigger: 'item' },
+  legend: {
+    orient: 'vertical',
+    left: 'left',
+    data: dataPie
+  },
   series: [
     {
       type: 'pie',
       radius: '70%',
-      data: [
-        { value: 2, name: 'Não informado' },
-        { value: 4, name: 'ABORDAGEM - SDR' }
-      ],
+      data: dataPie,
       label: { formatter: '{d}%' }
     }
   ]
@@ -158,13 +136,13 @@ const chartOption1 = ref({
   tooltip: { trigger: 'axis' },
   xAxis: {
     type: 'category',
-    data: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex']
+    data: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'sab', 'dom']
   },
   yAxis: { type: 'value' },
   series: [
     {
       type: 'line',
-      data: [10, 20, 15, 30, 25]
+      data: [10, 20, 15, 30, 25, 5, 2]
     }
   ]
 })
@@ -198,9 +176,17 @@ const evolutionOption = ref({
       data: [2, 1, 4, 1, 4]
     },
     {
+      name: 'Atendimentos',
       type: 'line',
-      data: [2, 1, 4, 1, 4]
+      data: [2, 1, 4, 1, 4],
+      color: 'orange'
     }
   ]
 })
 </script>
+
+<style>
+.echarts {
+  height: 250px
+}
+</style>

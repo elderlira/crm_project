@@ -4,13 +4,12 @@
             <v-col v-for="(m, index) in metrics" :key="index" cols="12" lg="2" md="6" sm="12">
                 <v-card rounded="xl" elevation="3" class="pa-5">
                     <v-row>
-                        <v-col cols="2">
+                        <v-col>
                             <v-icon :color="m.color" :icon="m.icon" size="30"></v-icon>
                         </v-col>
                         <v-col cols="9" class="text-center">
                             <p style="font-size: 30px">
                                 {{ m.value }}
-
                             </p>
                         </v-col>
                     </v-row>

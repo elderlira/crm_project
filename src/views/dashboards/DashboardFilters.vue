@@ -11,6 +11,7 @@
 
   <!-- Card de filtros -->
   <v-card rounded="xl" elevation="3" class="pa-4">
+
     <v-row dense align="end">
 
       <v-col cols="12" sm="6" md="3">
@@ -48,23 +49,42 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const startDate = ref<string | null>(null)
-const endDate = ref<string | null>(null)
-const user = ref<string | null>(null)
-const department = ref<string | null>(null)
-const channel = ref<string | null>(null)
+const startDate = ref('')
+const endDate = ref('')
+const user = ref('')
+const department = ref('')
+const channel = ref('')
 
 const users = ['Administrador', 'Alfredo', 'Glauber']
 const departments = ['SDR', 'Vendas', 'Suporte']
 const channels = ['WhatsApp', 'Instagram', 'Email']
 
+interface FilterData {
+  startDate: string,
+  endDate: string,
+  user: string,
+  department: string,
+  channel: string
+}
+
+const emit = defineEmits<{
+  (e: 'valorAEnviar', payload: FilterData): void
+}>()
+
+
 const updateDashboard = () => {
-  console.log({
+
+  const filterData: FilterData = {
     startDate: startDate.value,
     endDate: endDate.value,
     user: user.value,
     department: department.value,
     channel: channel.value
-  })
+  }
+
+  // console.log(filterData)
+
+  emit('valorAEnviar', filterData)
+
 }
 </script>

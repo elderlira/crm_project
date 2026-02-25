@@ -17,37 +17,13 @@
         <MetricCard :title="metric.title" :value="metric.value" :color="metric.color" :icon="metric.icon" />
       </v-col>
     </v-row> -->
-
-    <v-row class="mb-6" dense>
-
-      <v-col cols="12" md="4">
-        <ChartCard :filterValue="filterValue" title="Atendimento por canal">
-          <v-chart :option="pieChannel" style="height: 250px;" />
-        </ChartCard>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <ChartCard :filterValue="filterValue" title="Motivo de fechamento">
-          <v-chart :option="pieClosing" style="height: 250px;" />
-        </ChartCard>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <ChartCard :filterValue="filterValue" title="Atendimento por departamento">
-          <v-chart :option="pieDepartment" style="height: 250px;" />
-        </ChartCard>
-      </v-col>
-
-    </v-row>
-
     <v-row>
       <v-col cols="12">
         <ChartCard title="Evolução atendimentos">
-          <v-chart :option="evolutionOption" style="height: 300px;" />
+          <v-chart />
         </ChartCard>
       </v-col>
     </v-row>
-
   </v-container>
 </template>
 
@@ -55,9 +31,9 @@
 import { ref } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '/src/views/dashboards/ChartCard.vue'
-import MetricCard from '/src/views/dashboards/MetricCard.vue'
 import DashboardFilters from '/src/views/dashboards/DashboardFilters.vue'
-import Grafics from './dashboards/Grafics.vue'
+import Grafics from '/src/views/dashboards/GraphCards.vue'
+import MetricCard from './dashboards/MetricCard.vue'
 
 interface FilterData {
   startDate: string,

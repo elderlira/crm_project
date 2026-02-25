@@ -1,94 +1,206 @@
 <template>
-  <v-card rounded="xl" elevation="3" class="pa-5">
-    <!-- <v-row class="mb-2">
-      <v-col v-for="(metric, index) in metrics" :key="index" cols="12" sm="8" md="4" lg="2">
-        {{ title }}
-
-        <v-btn icon variant="text" size="small">
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
-        {{ valores }}
-        <div style="height: 300px;">
-
+  <div>
+ <v-row class="mt-6">
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Atendimento por canal
         </div>
-      </v-col>
-    </v-row> -->
-
-    <v-card color="#e8f1f2" class="pt-10  ml-2 mr-2">
-      <div class="grid gap-6 
-            grid-cols-1 
-            sm:grid-cols-2 
-            lg:grid-cols-3 
-            xl:grid-cols-4
-            mr-5
-            ">
-        <div v-for="(item, index) in atendentCardItens" :key="index" class="p-6 rounded-2xl shadow-lg bg-white flex flex-col gap-3 
-           hover:scale-105 transition duration-300 ml-6 mr-2 mb-10">
-          <RouterLink :to="item.route" class="flex flex-col gap-3">
-            <component :is="item.icon" :style="{ fontSize: item.size, color: '#6d28d9' }" />
-
-            <h2 class="text-lg font-semibold">
-              {{ item.title }}
-            </h2>
-
-            <p class="text-sm text-gray-500">
-              {{ item.subtitle }}
-            </p>
-          </RouterLink>
+        <v-chart
+          :option="Channel"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Motivo de fechamento
         </div>
-      </div>
-    </v-card>
+        <v-chart
+          :option="Closing"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+  </v-row>
+  <v-row class="mt-6">
+    
+  </v-row>
+   <v-row class="mt-6">
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Atendimento por departamento
+        </div>
+        <v-chart
+          :option="Department"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Evolução atendimentos
+        </div>
+        <v-chart
+          :option="evolutionOption"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+  </v-row>
 
-  </v-card>
+  <v-row class="mt-6">
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Atendimento por dia
+        </div>
+
+        <v-chart
+          :option="chartOption1"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+
+    <v-col cols="12" md="6">
+      <v-card rounded="xl" elevation="3" class="pa-5">
+        <div class="text-subtitle-1 font-weight-bold mb-4">
+          Performance por Atendente
+        </div>
+
+        <v-chart
+          :option="chartOption2"
+          style="height: 300px"
+          autoresize
+        />
+      </v-card>
+    </v-col>
+
+  </v-row>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import VChart from 'vue-echarts'
 
-import { ref, Ref, watch } from 'vue'
+// 👇 IMPORTANTE
+import * as echarts from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart, BarChart } from 'echarts/charts'
+import {
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent
+} from 'echarts/components'
 
-interface FilterData {
-  startDate: string,
-  endDate: string,
-  user: string,
-  department: string,
-  channel: string
-}
+// 👇 REGISTRAR módulos
+echarts.use([
+  CanvasRenderer,
+  LineChart,
+  BarChart,
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent
+])
 
-const props = defineProps<{
-  title: string,
-  filterValue: FilterData | null
-}>()
-
-let valores = ref<FilterData>({
-  startDate: '',
-  endDate: '',
-  user: '',
-  department: '',
-  channel: ''
+/* ============================= */
+const Channel = ref({
+  tooltip: { trigger: 'item' },
+  series: [
+    {
+      type: 'pie',
+      radius: '70%',
+      data: [{ value: 12, name: 'Whatsapp' }],
+      label: { formatter: '{d}%' }
+    }
+  ]
+})
+const Closing = ref({
+  tooltip: { trigger: 'item' },
+  series: [
+    {
+      type: 'pie',
+      radius: '70%',
+      data: [{ value: 6, name: 'SEM MENSAGEM FINAL' }],
+      label: { formatter: '{d}%' }
+    }
+  ]
+})
+const Department = ref({
+  tooltip: { trigger: 'item' },
+  series: [
+    {
+      type: 'pie',
+      radius: '70%',
+      data: [
+        { value: 2, name: 'Não informado' },
+        { value: 4, name: 'ABORDAGEM - SDR' }
+      ],
+      label: { formatter: '{d}%' }
+    }
+  ]
 })
 
-watch(
-  () => props.filterValue,
-  (newFilters) => {
-    if (newFilters) {
-      console.log(newFilters)
-      valores.value = newFilters
-    }
+
+const chartOption1 = ref({
+  tooltip: { trigger: 'axis' },
+  xAxis: {
+    type: 'category',
+    data: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex']
   },
-  { deep: true }
-)
+  yAxis: { type: 'value' },
+  series: [
+    {
+      type: 'line',
+      data: [10, 20, 15, 30, 25]
+    }
+  ]
+})
 
-const metrics = [
-  { title: 'Total de atendimentos', value: 12, color: 'green', icon: 'mdi-chart-line' },
-  { title: 'Receptivos', value: 6, color: 'red', icon: 'mdi-phone-incoming' },
-  { title: 'Ativos', value: 6, color: 'blue', icon: 'mdi-phone-outgoing' },
-  { title: 'Pendentes', value: 0, color: 'indigo', icon: 'mdi-message-reply-text' },
-  { title: 'Atendentes', value: 3, color: 'yellow', icon: 'mdi-account-group' },
-  { title: 'Total contatos', value: 741, color: 'orange', icon: 'mdi-account-multiple' },
-  { title: 'Novos contatos', value: 7, color: 'teal', icon: 'mdi-account-plus' },
-  { title: 'Contatos ativos', value: 7, color: 'purple', icon: 'mdi-account-check' },
-  { title: 'TMA', value: '5h 21min', color: 'cyan', icon: 'mdi-timer-outline' },
-  { title: '1° resposta', value: '19h 36min', color: 'pink', icon: 'mdi-clock-outline' },
-]
+const chartOption2 = ref({
+  tooltip: { trigger: 'axis' },
+  xAxis: {
+    type: 'category',
+    data: ['João', 'Maria', 'Carlos']
+  },
+  yAxis: { type: 'value' },
+  series: [
+    {
+      type: 'bar',
+      data: [40, 60, 35]
+    }
+  ]
+})
 
+const evolutionOption = ref({
+  tooltip: { trigger: 'axis' },
+  xAxis: {
+    type: 'category',
+    data: ['16/02', '17/02', '18/02', '19/02', '20/02']
+  },
+  yAxis: { type: 'value' },
+  series: [
+    {
+      name: 'Atendimentos',
+      type: 'bar',
+      data: [2, 1, 4, 1, 4]
+    },
+    {
+      type: 'line',
+      data: [2, 1, 4, 1, 4]
+    }
+  ]
+})
 </script>

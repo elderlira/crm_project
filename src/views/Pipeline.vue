@@ -25,7 +25,7 @@
       <v-col cols="12" md="3">
         <v-card elevation="6" rounded="xl" theme="dark" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">
           <v-card-text>
-            <div class="text-caption ">Leads Ativos</div>
+            <div class="text-caption ">Leads Concluídos</div>
             <div class="text-h5 font-weight-bold">
               {{ activeLeads }}
             </div>
@@ -186,15 +186,15 @@ const selectedFilter = ref<string | null>(null)
 
 const stages = ref<Stage[]>([
   { id: 'prospect', name: 'Prospect', color: '#ef4444' },
-  { id: 'qualification', name: 'Qualificação', color: '#f97316' },
   { id: 'proposal', name: 'Proposta', color: '#eab308' },
   { id: 'negotiation', name: 'Negociação', color: '#3b82f6' },
-  { id: 'closed', name: 'Fechado', color: '#10b981' }
+  { id: 'closed', name: 'Fechado', color: '#10b981' },
+  { id: 'lost', name: 'Perdido', color: '#f97316' },
 ])
 
 const leads = ref<Lead[]>([
   { id: 1, name: 'Empresa A', phone: '(11) 9999-0001', value: 15000, stage: 'prospect', attendant: { id: 'joao', name: 'João' }, createdAt: '2026-02-18' },
-  { id: 2, name: 'Empresa B', phone: '(11) 9999-0002', value: 35000, stage: 'qualification', attendant: { id: 'maria', name: 'Maria' }, createdAt: '2026-02-16' },
+  { id: 2, name: 'Empresa B', phone: '(11) 9999-0002', value: 35000, stage: 'lost', attendant: { id: 'maria', name: 'Maria' }, createdAt: '2026-02-16' },
   { id: 3, name: 'Empresa C', phone: '(11) 9999-0003', value: 52000, stage: 'proposal', attendant: { id: 'ana', name: 'Ana' }, createdAt: '2026-02-14' },
   { id: 4, name: 'Empresa D', phone: '(11) 9999-0004', value: 80000, stage: 'negotiation', attendant: { id: 'carlos', name: 'Carlos' }, createdAt: '2026-02-12' },
   { id: 5, name: 'Empresa E', phone: '(11) 9999-0005', value: 95000, stage: 'closed', attendant: { id: 'joao', name: 'João' }, createdAt: '2026-02-10' }

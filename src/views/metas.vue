@@ -122,6 +122,10 @@
             label="Valor da Meta"
             type="number"
             v-model.number="form.targetValue"
+            :rules="[(v) => !!v || 'Valor obrigatório']"
+            min="0"
+            step="0.01"
+            required
           />
 
           <v-text-field
@@ -149,7 +153,7 @@
             <v-btn text @click="dialog = false">
                 Cancelar
             </v-btn>
-            <v-btn color="primary" :disabled="!form.meses || !form.ano" @click="saveGoal">
+            <v-btn color="primary" :disabled="!form.meses || !form.ano || !form.targetValue" @click="saveGoal">
                 Salvar
             </v-btn>
         </v-card-actions>

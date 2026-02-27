@@ -60,9 +60,20 @@
                     </v-card-text>
 
                     <v-card-actions>
-                        <v-btn size="small" @click="openEdit(goal)">
-                        Editar
-                        </v-btn>
+                        <v-row>
+                            <v-col class="d-flex text-left">
+                                <v-btn size="small" @click="openEdit(goal)">
+                                    Editar
+                                </v-btn>
+                            </v-col>
+                            <v-col class="justify-end  d-flex text-left">
+                                <v-btn  color="#dc2626" @click="goals = goals.filter(g => g.id !== goal.id); dialog = false" >
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+
+
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -87,19 +98,21 @@
 
         <v-card-text>
             <v-row>
-                <v-col cols=12 lg ="6" md="6" sm="12">
+                <v-col cols=12 lg ="6" md="6" sm="12" class="mb-5">
                     <v-select
                     label="selecione o mês"
                     :items="meses"
-                    v-model="form.mes"
-
+                    v-model="form.meses"
+                    :rules="[(v) => !!v || 'Mês é obrigatório']"
+                    
                     ></v-select>
                 </v-col>
-                <v-col cols=12 lg ="6" md="6" sm="12">
+                <v-col cols=12 lg ="6" md="6" sm="12" class="mb-5">
                     <v-select
                     label="selecione o ano"
                     :items="anos"
                     v-model="form.ano"
+                    :rules="[(v) => !!v || 'Ano é obrigatório']"
                     ></v-select>
                 </v-col>
             </v-row>
@@ -131,14 +144,12 @@
         </v-card-text>
 
         <v-card-actions class="d-flex align-center"> 
-            <v-btn icon color="#dc2626" @click="goals = goals.filter(g => g.id !== form.id); dialog = false" v-if="isEditing">
-                <v-icon>mdi-delete</v-icon>
-            </v-btn>
+   
             <v-spacer/>
             <v-btn text @click="dialog = false">
                 Cancelar
             </v-btn>
-            <v-btn color="primary" @click="saveGoal">
+            <v-btn color="primary" :disabled="!form.meses || !form.ano" @click="saveGoal">
                 Salvar
             </v-btn>
         </v-card-actions>

@@ -16,7 +16,7 @@
     </v-row>
 
     <!-- LISTA -->
-    <v-row>
+    <v-row class="mb-10">
       <v-col
         v-for="goal in goals"
         :key="goal.id"
@@ -55,7 +55,9 @@
         </v-card>
       </v-col>
     </v-row>
-
+    <v-card elevation="10">
+        <v-data-table class="rounded-xl":items="metas" ></v-data-table>
+    </v-card>        
     <!-- DIALOG -->
     <v-dialog v-model="dialog" max-width="600">
       <v-card>
@@ -112,12 +114,6 @@
 import { ref, shallowRef, onMounted, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
 
-interface GoalHistory {
-  month: string
-  target: number
-  achieved: number
-}
-
 interface Goal {
   id: string
   title: string
@@ -128,8 +124,13 @@ interface Goal {
   type: string
   scope: string
   active: boolean
-  history: GoalHistory[]
 }
+
+const metas = ref([
+  { mês: 'Janeiro',ano:2025, meta: 100, Alcançado: 70, cor: '#16a34a' },
+  { mês: 'Fevereiro', ano:2025, meta: 200, Alcançado: 150, cor: '#2563eb' },
+  { mês: 'Março', ano:2025, meta: 300, Alcançado: 250, cor: '#eab308' }
+])
 
 const goals = ref<Goal[]>([
   {

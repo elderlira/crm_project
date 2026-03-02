@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height">
+  <v-container fluid class="fill-height ma-0 pa-0">
     <v-row class="fill-height">
       
       <v-col cols="12" lg="5" md="5" sm="5" class="d-flex align-center justify-center">
@@ -42,7 +42,7 @@
         </v-card>
       </v-col>
 
-      <v-col lg="7" md="7" sm="7" class="d-none d-md-flex bg-grey-lighten-3 bg-black">
+      <v-col cols="12" lg="7" md="7" sm="7" class="d-none d-flex bg-grey-lighten-3 bg-black ma-0 pa-0">
       </v-col>
 
     </v-row>

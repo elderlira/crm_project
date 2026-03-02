@@ -39,8 +39,7 @@
                 </template>
 
                 <template v-slot:no-data>
-                    <v-btn prepend-icon="mdi-backup-restore" rounded="lg" text="Reset data" variant="text" border
-                        @click="reset"></v-btn>
+                    {{ ' Sem departamentos cadastrados' }}
                 </template>
             </v-data-table>
         </v-sheet>
@@ -121,7 +120,7 @@ const headers = [
 ]
 
 onMounted(() => {
-    reset()
+    // reset()
 })
 
 function add() {
@@ -157,18 +156,6 @@ function save() {
     }
 
     dialog.value = false
-}
-
-function reset() {
-    dialog.value = false
-    formModel.value = createNewRecord()
-    books.value = [
-        { id: 1, departamento: 'departamento 1', mensagem: '', ativo: true },
-        { id: 2, departamento: 'departamento 2', mensagem: '', ativo: false },
-        { id: 3, departamento: 'departamento 3', mensagem: '', ativo: false },
-        { id: 4, departamento: 'departamento 4', mensagem: '', ativo: true },
-        { id: 5, departamento: 'departamento 5', mensagem: '', ativo: true },
-    ]
 }
 
 </script>

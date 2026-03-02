@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '../views/Dashboard.vue'
 import PipelineView from '../views/Pipeline.vue'
 import ConversasView from '../views/Talks.vue'
+import LoginView from '../views/Login.vue'  
+import ForgotPassword from '../views/login/Forgot-password.vue'
 import LeadsView from '../views/Leads.vue'
 import ConfigView from '../views/Config.vue'
 import ReasonForClousure from '../views/config/ReasonForClousure.vue'
@@ -14,10 +16,14 @@ import Department from '../views/config/Department.vue'
 import Profile from '../views/config/Profile.vue'
 import UserRegister from '../views/config/UserRegister.vue'
 
+
+
 const routes = [
   { path: '/', name: 'Dashboard', component: DashboardView },
   { path: '/pipeline', name: 'pipeline', component: PipelineView },
   { path: '/conversas', name: 'talks', component: ConversasView },
+  { path: '/login', name: 'login', component: LoginView, meta:{hideSidebar: true} },
+  { path: '/forgot-password', name: 'forgotPassword', component: ForgotPassword, meta:{hideSidebar: true} },
   { path: '/leads', name: 'lead', component: LeadsView },
   { path: '/configuracoes', name: 'config', component: ConfigView },
   { path: '/configuracao-motivo-fechamento', name: 'reasonForClousure', component: ReasonForClousure},

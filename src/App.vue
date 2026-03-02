@@ -11,7 +11,7 @@ const toggleSidebar = () => {
 
 <template>
   <div class="flex h-screen overflow-hidden">
-    <Sidebar :isOpen="isOpen" @toggle="isOpen = !isOpen" />
+    <Sidebar :isOpen="isOpen" @toggle="isOpen = !isOpen" v-if="!$route.meta.hideSidebar" />
     
     <main class="flex-1 bg-gray-100 overflow-auto">
       <router-view />

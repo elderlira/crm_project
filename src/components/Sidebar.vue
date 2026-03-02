@@ -1,13 +1,3 @@
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-
-const props = defineProps<{
-  isOpen: boolean
-}>()
-
-const emit = defineEmits(['toggle'])
-</script>
-
 <template>
   <aside :class="[
     'h-screen bg-black text-white flex flex-col transition-all duration-300',
@@ -62,6 +52,16 @@ const emit = defineEmits(['toggle'])
     </div>
   </aside>
 </template>
+
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue'
+
+const props = defineProps<{
+  isOpen: boolean
+}>()
+
+const emit = defineEmits(['toggle'])
+</script>
 
 <style>
 .rodape {

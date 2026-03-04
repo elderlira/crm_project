@@ -27,7 +27,7 @@
                 @click:append-inner="show=!show"
                 required
               />
-               <v-btn variant="text" size="small" class="text-none " color="error" to="/forgot-password">
+               <v-btn variant="text" size="small" class="text-none " color="primary" to="/forgot-password">
                 Esqueci minha senha
               </v-btn>
             </v-form>
@@ -35,7 +35,7 @@
 
           <v-card-actions class="d-flex flex-column gap-4 "> 
             <v-spacer />
-            <v-btn  class="text-primary"  @click="login">
+            <v-btn  class="text-primary"  @click="handleLogin">
               Entrar
             </v-btn>
           </v-card-actions>
@@ -44,14 +44,35 @@
 
       <v-col cols="12" lg="7" md="7" sm="7" class="d-none d-flex bg-grey-lighten-3 bg-black ma-0 pa-0">
       </v-col>
+      
 
     </v-row>
+
+    <v-dialog v-model="validation" max-width="400" persistent>
+        <v-card class="justify-center align-center">
+            <v-card-title class="text-h5 " style="color:red">
+                Erro
+            </v-card-title>
+            <v-card-text>
+               <v-row> Usuário ou senha inválidos. </v-row>
+                <v-row> Por favor, tente novamente. </v-row>
+            </v-card-text>
+            <v-card-actions>
+            <v-spacer />
+            <v-btn color="primary" @click="validation_teste ">
+                Fechar
+            </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+import { loginUser } from '../services/authStore'
+const router = useRouter()
 
 const show = ref(false)
 
@@ -60,13 +81,37 @@ const form = ref({
   password: ''
 })
 
+const error = ref("")
+
 const emailRules = [
-  (v)  => !!v || 'Email é obrigatório',
-  (v)  => /.+@.+\..+/.test(v) || 'Email deve ser válido'
+  (v) => !!v || 'Email é obrigatório',
+  (v) => /.+@.+\..+/.test(v) || 'Email deve ser válido'
 ]
 
 const passwordRules = [
-  (v)  => !!v || 'Senha é obrigatória',
-  (v)  => v.length >= 6 || 'Senha deve conter no mínimo 6 caracteres'
+  (v) => !!v || 'Senha é obrigatória',
+  (v) => v.length >= 6 || 'Senha deve conter no mínimo 6 caracteres'
 ]
+
+const validation = ref(false)
+
+const handleLogin = async () => {
+  try {
+
+    await loginUser(form.value.email, form.value.password)
+
+    router.push("/")
+
+  } catch (err) {
+    validation.value = true
+    error.value = er
+
+  }
+}
+
+const validation_teste = () => {
+    validation.value = false
+    form.value.email = ''
+    form.value.password = ''
+}
 </script>

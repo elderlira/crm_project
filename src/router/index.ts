@@ -16,8 +16,6 @@ import Department from '../views/config/Department.vue'
 import Profile from '../views/config/Profile.vue'
 import UserRegister from '../views/config/UserRegister.vue'
 
-
-
 const routes = [
   { path: '/', name: 'Dashboard', component: DashboardView },
   { path: '/pipeline', name: 'pipeline', component: PipelineView },
@@ -35,7 +33,6 @@ const routes = [
   { path: '/configuracao_leads', name: 'clientStatus', component: ClientStatus },
   { path: '/perfil', name: 'profile', component: Profile }, 
 ]
-
 export default createRouter({
   history: createWebHistory(),
   routes

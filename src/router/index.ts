@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import DashboardView from '../views/Dashboard.vue'
 import PipelineView from '../views/Pipeline.vue'
+import MetasView from '../views/metas.vue'
 import ConversasView from '../views/Talks.vue'
 import LeadsView from '../views/Leads.vue'
 import ConfigView from '../views/Config.vue'
@@ -14,9 +15,11 @@ import Department from '../views/config/Department.vue'
 import Profile from '../views/config/Profile.vue'
 import UserRegister from '../views/config/UserRegister.vue'
 
+
 const routes = [
   { path: '/', name: 'Dashboard', component: DashboardView },
   { path: '/pipeline', name: 'pipeline', component: PipelineView },
+  {path: '/metas', name: 'metas', component: MetasView },
   { path: '/conversas', name: 'talks', component: ConversasView },
   { path: '/leads', name: 'lead', component: LeadsView },
   { path: '/configuracoes', name: 'config', component: ConfigView },

@@ -37,6 +37,10 @@ const emit = defineEmits(['toggle'])
         <RouterLink to="/pipeline" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
           📈 <span v-if="isOpen">Pipeline</span>
         </RouterLink>
+      
+        <RouterLink to="/metas" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
+          🎯 <span v-if="isOpen">Metas</span>
+        </RouterLink>
 
         <RouterLink to="/conversas" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
           💬 <span v-if="isOpen">Conversas</span>

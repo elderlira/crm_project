@@ -40,7 +40,7 @@
                 elevation="4"
                 >
                     <v-card-title>
-                        {{ `Metas de ${goal.mes} ${goal.ano} ` }}
+                        {{ `Metas de ${goal.meses} ${goal.ano} ` }}
                     </v-card-title>
 
                     <v-card-text @click="selectedGoal = goal">
@@ -80,16 +80,39 @@
         </v-row>
      </div>    
     
-    <v-card elevation="6">
-        <v-data-table class="rounded-xl":items="metas" >
-            <template v-slot:item.cor="{ item }">
-                <div class="color-cell" :style="{ backgroundColor: item.cor }">
-                    {{ item.cor }}
-                </div>
-            </template>
-        </v-data-table>
-    </v-card>        
-    <!-- DIALOG -->
+     <v-card elevation="6">
+  <v-data-table
+    :headers="headers"
+    :items="goals"
+    class="rounded-xl"
+  >
+
+    <template v-slot:item.meses="{ item }">
+      {{ item.meses }}
+    </template>
+
+    <template v-slot:item.ano="{ item }">
+      {{ item.ano }}
+    </template>
+
+    <template v-slot:item.targetValue="{ item }">
+      {{ item.targetValue }}
+    </template>
+
+    <template v-slot:item.achievedValue="{ item }">
+      {{ item.achievedValue }}
+    </template>
+
+    <template v-slot:item.progresso="{ item }">
+      <v-progress-linear
+        :model-value="getProgress(item)"
+        height="20"
+        :color="getColorByProgress(item)"
+      />
+    </template>
+
+  </v-data-table>
+</v-card>
     <v-dialog v-model="dialog" max-width="600">
       <v-card>
         <v-card-title>
@@ -168,7 +191,7 @@ import * as echarts from 'echarts'
 
 interface Goal {
   id: string
-  mes: number,
+  meses: number,
   ano: number,
   targetValue: number
   achievedValue: number
@@ -179,11 +202,13 @@ interface Goal {
   active: boolean
 }
 
-const metas = ref([
-  { mês: 'Janeiro',ano:2025, meta: 100, Alcançado: 70, cor: '#16a34a' },
-  { mês: 'Fevereiro', ano:2025, meta: 200, Alcançado: 150, cor: '#2563eb' },
-  { mês: 'Março', ano:2025, meta: 300, Alcançado: 250, cor: '#eab308' }
-])
+const headers = [
+  { title: 'Mês', key: 'meses' },
+  { title: 'Ano', key: 'ano' },
+  { title: 'Meta', key: 'targetValue' },
+  { title: 'Realizado', key: 'achievedValue' },
+  { title: 'Progresso', key: 'progresso' }
+]
 
 const meses = ref ([
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -211,8 +236,8 @@ const form = ref<Goal>({
   id: '',
   mes: '',
   ano: '',
-  targetValue: 0,
-  achievedValue: 0,
+  targetValue: '',
+  achievedValue:'',
   startDate: '',
   endDate: '',
   type: 'vendas',
@@ -225,8 +250,8 @@ const openCreate = () => {
   form.value = {
     id: '',
     title: '',
-    targetValue: 0,
-    achievedValue: 0,
+    targetValue: '',
+    achievedValue: '',
     startDate: '',
     endDate: '',
     type: 'vendas',

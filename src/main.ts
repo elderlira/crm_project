@@ -26,6 +26,7 @@ import {
 
 import { CanvasRenderer } from 'echarts/renderers'
 
+
 echarts.use([
   PieChart,
   BarChart,

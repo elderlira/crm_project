@@ -48,7 +48,6 @@
             </template>
         </v-data-table>
 
-        <!-- Modal de Adicionar/Editar Usuário -->
         <v-dialog v-model="dialog" max-width="600" persistent>
             <v-card :title="`${isEditing ? 'Editar' : 'Adicionar'} Usuário`">
                 <v-divider></v-divider>
@@ -148,7 +147,7 @@
 
                         <div v-if="currentAction === 'permissoes'">
                             <p class="text-subtitle2 mb-3">Selecione as permissões para <strong>{{ selectedUser?.name
-                            }}</strong></p>
+                                    }}</strong></p>
                             <v-checkbox v-for="perm in availablePermissions" :key="perm.id"
                                 v-model="selectedPermissions" :value="perm.id" :label="perm.name"
                                 color="primary"></v-checkbox>
@@ -156,7 +155,7 @@
 
                         <div v-if="currentAction === 'canais'">
                             <p class="text-subtitle2 mb-3">Selecione os canais para <strong>{{ selectedUser?.name
-                            }}</strong></p>
+                                    }}</strong></p>
                             <v-checkbox v-for="canal in availableChannels" :key="canal.id" v-model="selectedChannels"
                                 :value="canal.id" :label="canal.name" color="primary"></v-checkbox>
                         </div>
@@ -284,30 +283,27 @@ const users = ref<User[]>([
 const perfis = ['Usuário', 'Administrador', 'Supervisor']
 
 const availableGroups = [
-    { id: 1, name: 'Suporte Geral' },
-    { id: 2, name: 'Administradores' },
-    { id: 3, name: 'Vendas' },
-    { id: 4, name: 'Financeiro' },
+    { id: 1, name: 'AEDU Campo Verde MT' },
+    { id: 2, name: 'Gestão Método Educacional' },
+    { id: 3, name: 'Cruzeiro RJ' },
+    { id: 4, name: 'Comercial - UniFECAF Cachoeiro' },
 ]
 
 const availablePermissions = [
-    { id: 1, name: 'Criar Tickets' },
-    { id: 2, name: 'Editar Tickets' },
-    { id: 3, name: 'Deletar Tickets' },
-    { id: 4, name: 'Gerenciar Usuários' },
-    { id: 5, name: 'Visualizar Relatórios' },
+    { id: 1, name: 'ABORDAGEM - SDR' },
+    { id: 2, name: 'CALL - CLOSER' },
+    { id: 3, name: 'FECHAMENTO - CLOSER' },
+    { id: 4, name: 'FINANCEIRO' },
+    { id: 5, name: 'ONBOARDING - CS' },
 ]
 
 const availableChannels = [
-    { id: 1, name: 'Email' },
-    { id: 2, name: 'WhatsApp' },
-    { id: 3, name: 'Chat' },
-    { id: 4, name: 'Telefone' },
+    { id: 1, name: 'JCHAT' },
+    { id: 2, name: 'Metodo Digital' },
 ]
 
 const expanded = ref<number[]>([])
 
-// Validation rules
 const nameRules = [
     (v: string) => !!v || 'Nome é obrigatório',
     (v: string) => v?.length >= 3 || 'Nome deve ter no mínimo 3 caracteres',
@@ -323,7 +319,6 @@ const passwordRules = [
     (v: string) => v?.length >= 8 || 'Senha deve ter no mínimo 8 caracteres',
 ]
 
-// Functions
 function createNewRecord() {
     return {
         id: null,

@@ -5,7 +5,7 @@
   ]" style="background-color: #552F9B;">
     <div class="aside-color">
       <button @click="emit('toggle')" class="w-full p-3 hover:bg-purple-700 transition"
-        :style="{ backgroundColor: '552F9B' }">
+        :style="{ backgroundColor: '#552F9B' }">
         ☰
       </button>
       <div class="flex items-center gap-3 pt-6 pb-4 px-4 border-b">
@@ -27,7 +27,7 @@
         <RouterLink to="/pipeline" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
           📈 <span v-if="isOpen">Pipeline</span>
         </RouterLink>
-      
+
         <RouterLink to="/metas" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
           🎯 <span v-if="isOpen">Metas</span>
         </RouterLink>
@@ -47,24 +47,40 @@
     </div>
 
     <!-- RODAPÉ -->
-    <div class="p-4 border-t flex items-center gap-3 mt-auto rodape">
-      👤
+    <div class="p-4 border-t flex items-center justify-between gap-3 mt-auto rodape">
+      <div class="flex items-center gap-3 flex-1">
+        <span class="text-xl">👤</span>
+        <div v-if="isOpen" class="min-w-0">
+          <div class="text-sm font-medium truncate">João Silva</div>
+          <div class="text-xs text-purple-400 truncate">Administrador</div>
+        </div>
+      </div>
       <div v-if="isOpen">
-        <div class="text-sm">João Silva</div>
-        <div class="text-xs text-purple-400">Administrador</div>
+        <v-btn @click="logout" size="small" variant="text" color="#8B0000" icon="mdi-logout"></v-btn>
       </div>
     </div>
+
   </aside>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{
   isOpen: boolean
 }>()
 
 const emit = defineEmits(['toggle'])
+
+const logout = () => {
+  localStorage.removeItem("access_token")
+  localStorage.removeItem("refresh_token")
+
+  router.push("/login")
+}
 </script>
 
 <style>

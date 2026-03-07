@@ -1,26 +1,9 @@
-import api from "./api"
+import api from "../api/axios"
+import type { LoginPayload, LoginResponse } from "../types/auth"
 
-export const login = async (email: string, password: string) => {
 
-  return new Promise((resolve, reject) => {
+export async function login(data: LoginPayload): Promise<LoginResponse> {
+  const response = await api.post("auth/login/", data)
 
-    setTimeout(() => {
-
-      if (email === "admin@email.com" && password === "123456") {
-
-        resolve({
-          token: "fake-jwt-token",
-          user: {
-            name: "Admin",
-            email: email
-          }
-        })
-
-      } else {
-        reject("Email ou senha inválidos")
-      }
-
-    }, 1000)
-
-  })
+  return response.data
 }

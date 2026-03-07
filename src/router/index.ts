@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../services/authStore'
 
 import DashboardView from '../views/Dashboard.vue'
 import PipelineView from '../views/Pipeline.vue'
@@ -19,24 +20,38 @@ import UserRegister from '../views/config/UserRegister.vue'
 
 
 const routes = [
-  { path: '/', name: 'Dashboard', component: DashboardView },
-  { path: '/pipeline', name: 'pipeline', component: PipelineView },
-  {path: '/metas', name: 'metas', component: MetasView },
-  { path: '/conversas', name: 'talks', component: ConversasView },
+  { path: '/', name: 'Dashboard', component: DashboardView, meta: { requiresAuth: true} },
+  { path: '/pipeline', name: 'pipeline', component: PipelineView, meta: { requiresAuth: true} },
+  {path: '/metas', name: 'metas', component: MetasView, meta: { requiresAuth: true} },
+  { path: '/conversas', name: 'talks', component: ConversasView, meta: { requiresAuth: true} },
   { path: '/login', name: 'login', component: LoginView, meta:{hideSidebar: true} },
   { path: '/forgot-password', name: 'forgotPassword', component: ForgotPassword, meta:{hideSidebar: true} },
-  { path: '/leads', name: 'lead', component: LeadsView },
-  { path: '/configuracoes', name: 'config', component: ConfigView },
-  { path: '/configuracao-motivo-fechamento', name: 'reasonForClousure', component: ReasonForClousure},
-  { path: '/etiquetas', name: 'label', component: Label},
-  { path: '/avaliacao', name: 'avaliation', component: Avaliation },
-  { path: '/usuario', name: 'userRegister', component: UserRegister },
-  { path: '/filas',  name: 'departament', component: Department },
-  { path: '/campos_customizados', name: 'customizeField', component: CustomizeField },
-  { path: '/configuracao_leads', name: 'clientStatus', component: ClientStatus },
-  { path: '/perfil', name: 'profile', component: Profile }, 
+  { path: '/leads', name: 'lead', component: LeadsView, meta: { requiresAuth: true} },
+  { path: '/configuracoes', name: 'config', component: ConfigView, meta: { requiresAuth: true} },
+  { path: '/configuracao-motivo-fechamento', name: 'reasonForClousure', component: ReasonForClousure, meta: { requiresAuth: true}},
+  { path: '/etiquetas', name: 'label', component: Label, meta: { requiresAuth: true}},
+  { path: '/avaliacao', name: 'avaliation', component: Avaliation, meta: { requiresAuth: true} },
+  { path: '/usuario', name: 'userRegister', component: UserRegister, meta: { requiresAuth: true} },
+  { path: '/filas',  name: 'departament', component: Department, meta: { requiresAuth: true} },
+  { path: '/campos_customizados', name: 'customizeField', component: CustomizeField, meta: { requiresAuth: true} },
+  { path: '/configuracao_leads', name: 'clientStatus', component: ClientStatus, meta: { requiresAuth: true} },
+  { path: '/perfil', name: 'profile', component: Profile, meta: { requiresAuth: true} }, 
 ]
-export default createRouter({
+
+const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+
+  const auth = useAuthStore()
+
+  if(to.meta.requiresAuth && !auth.token) {
+    next("/login")
+  } else {
+    next()
+  }
+})
+
+export default router

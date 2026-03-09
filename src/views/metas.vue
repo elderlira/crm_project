@@ -107,14 +107,15 @@
 
 
           <v-text-field label="Valor da Meta" type="number" v-model.number="form.targetValue"
-            :rules="[(v) => !!v || 'Valor obrigatório']" min="0" step="0.01" required />
+            :rules="[(v) => !!v || 'Valor obrigatório']" min="0" step="1" required />
 
           <v-text-field label="Valor Realizado" type="text" v-model.number="form.achievedValue" disabled />
 
-          <v-text-field label="Data Início" type="date" v-model="form.startDate" :min="minDateStart"
-            :max="maxDateEnd" />
+          <v-text-field label="Data Início" type="date" v-model="form.startDate" :min="minDateStart" :max="maxDateEnd"
+            :rules="[rules.required]" />
 
-          <v-text-field label="Data Final" type="date" v-model="form.endDate" :min="minDateStart" :max="maxDateEnd" />
+          <v-text-field label="Data Final" type="date" v-model="form.endDate" :min="minDateStart" :max="maxDateEnd"
+            :rules="[rules.required]" />
         </v-card-text>
 
         <v-card-actions class="d-flex align-center">
@@ -123,9 +124,12 @@
           <v-btn text @click="dialog = false">
             Cancelar
           </v-btn>
-          <v-btn color="primary" :disabled="!form.mes || !form.ano || !form.targetValue" @click="saveGoal">
+          <v-btn color="primary"
+            :disabled="!form.mes || !form.ano || !form.targetValue || !form.startDate || !form.endDate"
+            @click="saveGoal">
             Salvar
           </v-btn>
+
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -180,6 +184,10 @@ interface Goal {
   scope: string
   active: boolean
 }
+
+const rules = ref({
+  required: (value: any) => !!value || 'Campo obrigatório'
+});
 
 const headers = [
   { title: 'Mês', key: 'meses' },

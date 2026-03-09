@@ -111,9 +111,10 @@
 
           <v-text-field label="Valor Realizado" type="text" v-model.number="form.achievedValue" disabled />
 
-          <v-text-field label="Data Início" type="date" v-model="form.startDate" />
+          <v-text-field label="Data Início" type="date" v-model="form.startDate" :min="minDateStart"
+            :max="maxDateEnd" />
 
-          <v-text-field label="Data Final" type="date" v-model="form.endDate" />
+          <v-text-field label="Data Final" type="date" v-model="form.endDate" :min="minDateStart" :max="maxDateEnd" />
         </v-card-text>
 
         <v-card-actions class="d-flex align-center">
@@ -163,7 +164,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, watch, nextTick } from 'vue'
+import { ref, shallowRef, onMounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
 import { format } from "date-fns"
 
@@ -223,6 +224,7 @@ const form = ref<Goal>({
 })
 
 const openCreate = () => {
+  isLoadingEdit = false;
   isEditing.value = false
   form.value = {
     id: '',
@@ -240,9 +242,14 @@ const openCreate = () => {
 }
 
 const openEdit = (goal: Goal) => {
+  isLoadingEdit = true;
   isEditing.value = true
   form.value = { ...goal }
   dialog.value = true
+
+  nextTick(() => {
+    isLoadingEdit = false;
+  });
 }
 
 const verifyBeforeToPush = (formData: Goal) => {
@@ -339,6 +346,36 @@ const renderChart = async () => {
     console.error('Erro gráfico:', err)
   }
 }
+
+const getMonthRange = (mes: string, ano: number) => {
+  const monthIndex = meses.value.indexOf(mes) + 1;
+  const firstDay = new Date(ano, monthIndex - 1, 1);
+  const lastDay = new Date(ano, monthIndex, 0).getDate();
+  return {
+    start: `${ano}-${monthIndex.toString().padStart(2, '0')}-01`,
+    end: `${ano}-${monthIndex.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`
+  };
+};
+
+const minDateStart = computed(() => {
+  if (!form.value.mes || !form.value.ano) return '';
+  return getMonthRange(form.value.mes, form.value.ano).start;
+});
+
+const maxDateEnd = computed(() => {
+  if (!form.value.mes || !form.value.ano) return '';
+  return getMonthRange(form.value.mes, form.value.ano).end;
+});
+
+let isLoadingEdit = false;
+
+watch([() => form.value.mes, () => form.value.ano], ([newMes, newAno]) => {
+  if (newMes && newAno && !isLoadingEdit) {
+    form.value.startDate = '';
+    form.value.endDate = '';
+  }
+});
+
 
 onMounted(() => {
   renderChart()

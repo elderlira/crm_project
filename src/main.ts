@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { format } from 'date-fns'
 import './style.css'
 import App from './App.vue'
 import router from './router'
@@ -47,6 +48,10 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
+
+app.config.globalProperties.$formatDate = (date: string | number | Date, fmt: string) => {
+  return format(date, fmt);
+};
 
 app.use(createPinia())
 app.use(router)

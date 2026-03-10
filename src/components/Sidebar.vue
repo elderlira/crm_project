@@ -27,37 +27,43 @@
       <nav class="d-flex flex-column gap-2">
         <RouterLink to="/"
           class="d-flex align-center  pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">📊</span>
+          <v-icon class="text-h5 mr-3" color="#EEE8AA">mdi-chart-bar</v-icon>
           <span v-if="isOpen" class="text-body-1">Dashboard</span>
         </RouterLink>
 
         <RouterLink to="/pipeline"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">📈</span>
+          <v-icon class="text-h5 mr-3" color="#FFA500">mdi-chart-line</v-icon>
           <span v-if="isOpen" class="text-body-1">Pipeline</span>
         </RouterLink>
 
         <RouterLink to="/metas"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">🎯</span>
+          <v-icon class="text-h5 mr-3" color="#A0522D">mdi-bullseye-arrow</v-icon>
           <span v-if="isOpen" class="text-body-1">Metas</span>
         </RouterLink>
 
         <RouterLink to="/conversas"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">💬</span>
+          <v-icon class="text-h5 mr-3" color="#BC8F8F">mdi-chat-processing-outline</v-icon>
           <span v-if="isOpen" class="text-body-1">Conversas</span>
         </RouterLink>
 
         <RouterLink to="/leads"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">👥</span>
+          <v-icon class="text-h5 mr-3" color="#BDB76B">mdi-account-multiple-outline</v-icon>
           <span v-if="isOpen" class="text-body-1">Leads</span>
+        </RouterLink>
+
+        <RouterLink to="/funil"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <v-icon class="text-h5 mr-3" color="#00BFFF">mdi-filter-outline</v-icon>
+          <span v-if="isOpen" class="text-body-1">Funil</span>
         </RouterLink>
 
         <RouterLink to="/configuracoes"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
-          <span class="text-h5 mr-3">⚙️</span>
+          <v-icon class="text-h5 mr-3" color="#A9A9A9">mdi-cog</v-icon>
           <span v-if="isOpen" class="text-body-1">Configurações</span>
         </RouterLink>
       </nav>
@@ -69,11 +75,15 @@
       style="background-color: #191970; border-color: rgba(255,255,255,0.1);">
       <v-row no-gutters align="center" class="flex-grow-1">
         <v-col cols="auto" class="pa-0">
-          <span class="text-h4">👤</span>
+          <v-avatar color="#6495ED">
+            <v-icon icon="mdi-account-circle"></v-icon>
+          </v-avatar>
+          <!-- <span class="text-h4">👤</span> -->
         </v-col>
         <v-col v-if="isOpen" class="pa-0 pl-3">
           <div class="text-body-1 font-weight-medium truncate-line">{{ auth.user.username.toUpperCase() }}</div>
-          <div class="text-caption text-purple-400 truncate-line">{{ auth.user.role.toUpperCase() }}</div>
+          <div class="text-caption text-purple-400 truncate-line" style="color: #FAEBD7;">{{
+            auth.user.role.toUpperCase() }}</div>
         </v-col>
       </v-row>
 

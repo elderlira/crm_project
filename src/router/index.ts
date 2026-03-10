@@ -17,6 +17,7 @@ import CustomizeField from '../views/config/CustomizeField.vue'
 import Department from '../views/config/Department.vue'
 import Profile from '../views/config/Profile.vue'
 import UserRegister from '../views/config/UserRegister.vue'
+import Funnel from '../views/Funnel.vue' 
 
 
 const routes = [
@@ -36,6 +37,7 @@ const routes = [
   { path: '/campos_customizados', name: 'customizeField', component: CustomizeField, meta: { requiresAuth: true} },
   { path: '/configuracao_leads', name: 'clientStatus', component: ClientStatus, meta: { requiresAuth: true} },
   { path: '/perfil', name: 'profile', component: Profile, meta: { requiresAuth: true} }, 
+  { path: '/funil', name: 'funnel', component: Funnel, meta: { requiresAuth: true} }, 
 ]
 
 const router = createRouter({

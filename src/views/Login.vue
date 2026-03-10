@@ -94,7 +94,6 @@ const handleLogin = async () => {
   } catch (err) {
 
     validation.value = true;
-    cleanFields()
 
   }
 }

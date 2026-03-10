@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { login } from "./authService";
+import api from "../api/axios"
 
 export const useAuthStore = defineStore("auth", {
 
   state: () => ({
-    user: null as any,
+    user: JSON.parse(localStorage.getItem("user") || "null"),
     token: localStorage.getItem("access_token") || null,
     refreshToken: localStorage.getItem("refresh_token") || null
   }),
@@ -18,9 +19,11 @@ export const useAuthStore = defineStore("auth", {
         this.token = data.access_token
         this.refreshToken = data.refresh_token
         this.user = data.user
-    
+        
         localStorage.setItem("access_token", data.access_token)
         localStorage.setItem("refresh_token", data.refresh_token)
+        localStorage.setItem("user", JSON.stringify(data.user) 
+      )
     },
 
     logout() {
@@ -28,34 +31,18 @@ export const useAuthStore = defineStore("auth", {
       this.user = null
   
       localStorage.removeItem("access_token")
+      localStorage.removeItem("refresh_token")
+      localStorage.removeItem("user")
+    },
+
+    async loadUser() {
+
+      const response = await api.get("/auth/me")
+    
+      this.user = response.data
+      localStorage.setItem("user", JSON.stringify(response.data))
+    
     }
   },
 
 })
-
-
-
-
-
-
-
-
-
-
-// import { reactive } from "vue"
-// import { login } from "../services/authService"
-
-// export const authState = reactive({
-//   user: null,
-//   token: null
-// })
-
-// export const loginUser = async (email: string, password: string) => {
-
-//   const response: any = await login(email, password)
-
-//   authState.user = response.user
-//   authState.token = response.token
-
-//   localStorage.setItem("token", response.token)
-// }

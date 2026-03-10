@@ -31,6 +31,7 @@
       </v-col>
 
       <v-col cols="12" lg="7" md="7" sm="7" class="d-none d-flex bg-grey-lighten-3 bg-black ma-0 pa-0">
+        <v-img src="../assets/crm.png"></v-img>
       </v-col>
 
 

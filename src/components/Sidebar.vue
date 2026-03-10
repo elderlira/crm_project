@@ -1,76 +1,97 @@
 <template>
   <aside :class="[
-    'h-screen bg-black text-white flex flex-col transition-all duration-300',
+    'h-screen text-white d-flex flex-column transition-all duration-300',
     isOpen ? 'w-64' : 'w-20'
   ]" style="background-color: #191970;">
-    <div class="aside-color">
-      <div :class="isOpen ? 'd-flex justify-center teste' : 'd-flex justify-center'">
-        <button @click="emit('toggle')"
-          :class="isOpen ? 'w - full p - 3 hover: bg - purple - 700 transition' : 'w - full p - 3 '"
-          :style="isOpen ? '' : { backgroundColor: '#191970' }">
-          ☰
-        </button>
-        <div :class="isOpen ? 'd-flex justify-center items-center gap-3 pt-15 pb-4 px-4 border-b' : ''">
 
-          <div v-if="isOpen">
-            <div class="font-bold text-sm">Nome da Empresa</div>
-            <div :class="isOpen ? 'text-xs' : 'text-xs text-purple-400'">CRM</div>
-          </div>
-        </div>
-      </div>
-      <nav class="mt-4 space-y-2 px-2">
-        <RouterLink to="/" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          📊 <span v-if="isOpen">Dashboard</span>
+    <v-container fluid :class="isOpen ? 'pa-0 flex-grow-0 border-b background_image' : 'pa-0 flex-grow-0 border-b'"
+      style="background-color: #191970;">
+      <v-row v-if="isOpen" no-gutters class="ma-0 pa-14 justify-center border-b"
+        style="border-color: rgba(255,255,255,0.1);">
+        <v-col cols="12" class="pa-0 text-center">
+          <div class="font-weight-bold text-body-2 mb-1">Nome da Empresa</div>
+          <div class="text-caption">CRM</div>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <v-container fluid class="flex-grow-1 ma-0 overflow-hidden" style="background-color: #191970;">
+      <v-row no-gutters class="ma-0 justify-center">
+        <v-col cols="12" class="pa-0 text-center">
+          <v-btn @click="emit('toggle')" block class="mb-4 pa-4 ma-0 white--text" color="purple" variant="text"
+            elevation="0" :class="isOpen ? 'bg-transparent' : 'bg-transparent'" rounded>
+            ☰
+          </v-btn>
+        </v-col>
+      </v-row>
+      <nav class="d-flex flex-column gap-2">
+        <RouterLink to="/"
+          class="d-flex align-center  pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">📊</span>
+          <span v-if="isOpen" class="text-body-1">Dashboard</span>
         </RouterLink>
 
-        <RouterLink to="/pipeline" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          📈 <span v-if="isOpen">Pipeline</span>
+        <RouterLink to="/pipeline"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">📈</span>
+          <span v-if="isOpen" class="text-body-1">Pipeline</span>
         </RouterLink>
 
-        <RouterLink to="/metas" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          🎯 <span v-if="isOpen">Metas</span>
+        <RouterLink to="/metas"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">🎯</span>
+          <span v-if="isOpen" class="text-body-1">Metas</span>
         </RouterLink>
 
-        <RouterLink to="/conversas" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          💬 <span v-if="isOpen">Conversas</span>
+        <RouterLink to="/conversas"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">💬</span>
+          <span v-if="isOpen" class="text-body-1">Conversas</span>
         </RouterLink>
 
-        <RouterLink to="/leads" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          👥 <span v-if="isOpen">Leads</span>
+        <RouterLink to="/leads"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">👥</span>
+          <span v-if="isOpen" class="text-body-1">Leads</span>
         </RouterLink>
 
-        <RouterLink to="/configuracoes" class="flex items-center gap-3 p-3 rounded hover:bg-purple-700 transition">
-          ⚙️ <span v-if="isOpen">Configurações</span>
+        <RouterLink to="/configuracoes"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <span class="text-h5 mr-3">⚙️</span>
+          <span v-if="isOpen" class="text-body-1">Configurações</span>
         </RouterLink>
       </nav>
-    </div>
+    </v-container>
 
-    <v-divider :thickness="2" class="bg-grey-lighten-3" /> <!-- ou a cor que preferir -->
+    <v-divider thickness="2" class="mx-0" style="background-color: #f5f5f5 !important;"></v-divider>
 
-    <div class="p-4 border-t flex items-center justify-between gap-3 rodape">
-      <div class="flex items-center gap-3 flex-1">
-        <span class="text-xl">👤</span>
-        <div v-if="isOpen" class="min-w-0">
-          <div class="text-sm font-medium truncate">{{ auth.user.username.toUpperCase() }}</div>
-          <div class="text-xs text-purple-400 truncate">{{ auth.user.role.toUpperCase() }}</div>
-        </div>
-      </div>
-      <div v-if="isOpen">
-        <v-btn @click="logout" size="small" variant="text" color="#8B0000" icon="mdi-logout"></v-btn>
-      </div>
-    </div>
+    <v-container fluid class="pa-4 ma-0 flex-grow-0 border-t d-flex align-center justify-space-between"
+      style="background-color: #191970; border-color: rgba(255,255,255,0.1);">
+      <v-row no-gutters align="center" class="flex-grow-1">
+        <v-col cols="auto" class="pa-0">
+          <span class="text-h4">👤</span>
+        </v-col>
+        <v-col v-if="isOpen" class="pa-0 pl-3">
+          <div class="text-body-1 font-weight-medium truncate-line">{{ auth.user.username.toUpperCase() }}</div>
+          <div class="text-caption text-purple-400 truncate-line">{{ auth.user.role.toUpperCase() }}</div>
+        </v-col>
+      </v-row>
 
+      <v-col cols="auto" class="pa-0">
+        <v-btn v-if="isOpen" @click="logout" size="small" variant="text" color="#8B0000" icon="mdi-logout">
+        </v-btn>
+      </v-col>
+    </v-container>
 
   </aside>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../services/authStore';
 
 const auth = useAuthStore()
-
 const router = useRouter()
 
 const props = defineProps<{
@@ -82,22 +103,16 @@ const emit = defineEmits(['toggle'])
 const logout = () => {
   localStorage.removeItem("access_token")
   localStorage.removeItem("refresh_token")
-
   router.push("/login")
 }
 </script>
 
-<style>
-.rodape {
-  background-color: 191970;
-}
-
-.aside-color {
-  background-color: #191970;
-}
-
-.teste {
+<style scoped>
+.background_image {
   background-image: url('@/assets/crm2.png');
   background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 120px;
 }
 </style>

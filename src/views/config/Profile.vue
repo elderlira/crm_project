@@ -36,32 +36,34 @@
             <v-card :title="`${isEditing ? 'Editar' : 'Criar'} Perfil`">
                 <v-divider></v-divider>
                 <template v-slot:text>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
-                                <v-text-field v-model="formModel.name" label="Nome" density="compact" :rules="nameRules"
-                                    variant="outlined"></v-text-field>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col>
-                                <v-toolbar-title style="font-size: 16px; padding-bottom: 0px; padding-top: 0px;"
-                                    class="pt-0 pb-0">
-                                    Rotas Permitidas:
-                                </v-toolbar-title>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12" md="6">
-                                <v-checkbox v-for='rota in coluna1' :key="rota.id" v-model="selectedItems"
-                                    :value=rota.nome :label="rota.label"></v-checkbox>
-                            </v-col>
-                            <v-col cols="12" md="6">
-                                <v-checkbox v-for='rota in coluna2' :key="rota.id" v-model="selectedItems"
-                                    :value=rota.nome :label="rota.label"></v-checkbox>
-                            </v-col>
-                        </v-row>
-                    </v-container>
+                    <v-form ref="formRef">
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
+                                    <v-text-field v-model="formModel.name" label="Nome" density="compact"
+                                        :rules="[rules.required, rules.min]" variant="outlined"></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <v-toolbar-title style="font-size: 16px; padding-bottom: 0px; padding-top: 0px;"
+                                        class="pt-0 pb-0">
+                                        Rotas Permitidas:
+                                    </v-toolbar-title>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    <v-checkbox v-for='rota in coluna1' :key="rota.id" v-model="selectedItems"
+                                        :value=rota.nome :label="rota.label"></v-checkbox>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-checkbox v-for='rota in coluna2' :key="rota.id" v-model="selectedItems"
+                                        :value=rota.nome :label="rota.label"></v-checkbox>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-form>
                 </template>
 
                 <v-divider></v-divider>
@@ -116,6 +118,7 @@ const showPassword = ref(false)
 const loading = ref(false)
 
 const formModel = ref<any>(createNewRecord())
+const formRef = ref()
 const isEditing = computed(() => !!formModel.value.id)
 
 const itemToDelete = ref<User | null>(null)
@@ -142,10 +145,15 @@ const users = ref<User[]>([
 
 const expanded = ref<number[]>([])
 
-const nameRules = [
-    (v: string) => !!v || 'Nome é obrigatório',
-    (v: string) => v?.length >= 3 || 'Nome deve ter no mínimo 3 caracteres',
-]
+// const nameRules = [
+//     (v: string) => !!v || 'Nome é obrigatório',
+//     (v: string) => v?.length >= 3 || 'Nome deve ter no mínimo 3 caracteres',
+// ]
+
+const rules = {
+    required: value => !!value || 'Nome obrigatório',
+    min: value => value.length >= 3 || 'O nome deve ter no mínimo 3 caracteres'
+}
 
 function createNewRecord() {
     return {
@@ -193,8 +201,14 @@ function closeDialog() {
     selectedItems.value = []
 }
 
-function save() {
+async function save() {
+    const { valid } = await formRef.value.validate()
+    if (!valid) {
+        return
+    }
+
     loading.value = true
+
     setTimeout(() => {
         if (isEditing.value) {
             const index = users.value.findIndex(u => u.id === formModel.value.id)

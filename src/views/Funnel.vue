@@ -57,18 +57,6 @@
       </v-row>
     </v-card-text>
 
-    <v-table theme="white">
-   <thead>
-    <tr>
-      <th class="text-left">Funil</th>
-      <th class="text-left">Data</th>
-      <th class="text-left">Canal</th>
-      <th class="text-left">Nome</th>
-      <th class="text-left">Mensagens</th>
-    </tr>
-  </thead>
-    </v-table>
-
     <v-card-actions class="justify-center " >
       <v-btn color="primary" @click="dialog = false" >
         OK
@@ -111,7 +99,55 @@
                 v-model="nome"
                 required
               ></v-text-field>
+
+                <v-btn
+                    class="text-none font-weight-regular"
+                    prepend-icon="mdi-plus"
+                    text="Criar mensagens"
+                    color="primary"
+                    @click="dialogMensagem = true"
+                ></v-btn>
             </v-col>
+<v-dialog v-model="dialogMensagem" width="500">
+
+  <v-card>
+
+    <v-card-title>
+      Nova mensagem
+    </v-card-title>
+
+    <v-card-text>
+
+      <v-textarea
+        v-model="novaMensagem"
+        label="Digite a mensagem"
+        rows="4"
+        variant="outlined"
+      ></v-textarea>
+
+    </v-card-text>
+
+    <v-card-actions class="justify-end">
+
+      <v-btn
+        variant="text"
+        @click="dialogMensagem = false"
+      >
+        Cancelar
+      </v-btn>
+
+      <v-btn
+        color="primary"
+        @click="salvarMensagem"
+      >
+        Salvar
+      </v-btn>
+
+    </v-card-actions>
+
+  </v-card>
+
+</v-dialog>
 
              <v-col
               cols="12"
@@ -150,10 +186,13 @@
                 v-model="acao"
                 required
               ></v-autocomplete>
+         
             </v-col>
           </v-row>
 
-          <small class="text-body-small text-medium-emphasis">* Caso adicione mídias na etapa, considere salvar sempre que finalizar a configuração desta etapa, minimizando problemas com o tamanho das mídias. </small>
+       
+
+          <small class="text-body-small text-medium-emphasis">* Caso adicione mídias na mensagem, considere salvar sempre que finalizar a configuração desta etapa, minimizando problemas com o tamanho das mídias. </small>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -197,7 +236,9 @@
 
     <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" text="Editar"></v-btn>
 
-    <v-btn class="mdi mdi-account-multiple" color="primary" text="Adicionar Leed"></v-btn>
+    <v-btn class="mdi mdi-account-group" color="#121111" text="Leeds no funil"></v-btn>
+
+    <v-btn class="mdi mdi-account-multiple-plus" color="primary" text="Adicionar Leed"></v-btn>
 
 </v-card-actions>
 
@@ -210,6 +251,31 @@
     Canal: {{ item.canal }} |
     Ação: {{ item.acao }} |
   </v-card-subtitle>
+  <v-row class="mt-6">
+
+  <v-col
+    v-for="(msg, index) in mensagens"
+    :key="index"
+    cols="12"
+    md="4"
+  >
+
+    <v-card class="pa-3">
+
+      <v-avatar color="primary">
+        {{ index + 1 }}
+      </v-avatar>
+
+      <div class="mt-2">
+        {{ msg.texto }}
+      </div>
+
+    </v-card>
+
+  </v-col>
+
+</v-row>
+  
   
 </v-card>
 
@@ -225,7 +291,11 @@
   const departamento = ref('')
   const canal = ref('')
   const acao = ref('')
-  
+  const dialogMensagem = ref(false)
+
+  const mensagens = ref([])
+  const novaMensagem = ref('')
+
   const tabela=ref([])
 
   function adicionarFunil(){
@@ -240,5 +310,17 @@
   departamento.value=''
   canal.value=''
   acao.value=''
+}
+function salvarMensagem() {
+
+  mensagens.value.push({
+    texto: novaMensagem.value,
+    leads: 0,
+    envios: 1,
+    tempo: 60
+  })
+
+  novaMensagem.value = ''
+  dialogMensagem.value = false
 }
 </script>

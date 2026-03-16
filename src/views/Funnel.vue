@@ -165,7 +165,7 @@
     <v-card-actions class="d-flex justify-md-end">
 
   
-      <v-btn class="mdi mdi-delete-outline" color="#d10d0d" variant="tonal" text="Deletar" @click="confirmarDelete(item)">
+      <v-btn class="mdi mdi-delete-outline" color="#d10d0d" variant="tonal" text="Deletar" @click="confirmDelete(item)">
 
       </v-btn>
 
@@ -194,7 +194,7 @@
               Cancelar
             </v-btn>
 
-            <v-btn color="error" @click="deletarFunil" variant="tonal">
+            <v-btn color="error" @click="deletarFunnel" variant="tonal">
               Deletar
             </v-btn>
 
@@ -220,9 +220,9 @@
       Canal: {{ item.channel }} |
       Ação: {{ item.action }} |
     </v-card-subtitle>
-    <v-row class="mt-6" v-for="(msg, index) in mensagens.filter((m) => m.funilId === item.id)" :key="index">
+    <v-row class="mt-6" >
 
-      <v-col cols="12" md="4">
+      <v-col v-for="(msg, index) in mensagens.filter((m) => m.funilId === item.id)" :key="index" cols="12" md="4">
 
         <v-card class="pa-3">
 
@@ -243,11 +243,50 @@
     <v-btn
       icon="mdi-pencil"
       size="small"
-      @click="editarMensagem(msg, index)"
+      @click="openEditMensage(msg)"
       variant="tonal"
     ></v-btn>
 
   </div>
+
+  <v-dialog v-model="dialogEditarMensagem" max-width="500">
+
+  <v-card>
+
+    <v-card-title>
+      Editar mensagem
+    </v-card-title>
+
+    <v-card-text>
+
+      <v-textarea
+        v-model="textoEditado"
+        label="Editar mensagem"
+        rows="4"
+        variant="outlined"
+      ></v-textarea>
+
+    </v-card-text>
+
+    <v-divider></v-divider>
+
+    <v-card-actions>
+
+      <v-spacer></v-spacer>
+
+      <v-btn variant="text" @click="dialogEditarMensagem = false">
+        Cancelar
+      </v-btn>
+
+      <v-btn color="primary" @click="saveEditMensage">
+        Salvar
+      </v-btn>
+
+    </v-card-actions>
+
+  </v-card>
+
+</v-dialog>
 
 </v-card>
 </v-col>
@@ -275,6 +314,10 @@ const id_tabela = ref(0)
 
 const deleteDialog = ref(false)
 const itemToDelete = ref(null)
+
+const dialogEditarMensagem = ref(false)
+const mensagemEditando = ref(null)
+const textoEditado = ref('')
 
 const adicionarFunil = () => {
   tabela.value.push({
@@ -306,7 +349,7 @@ const edit = (index) => {
   console.log('index de edicao', index)
 }
 
-const deletarFunil = () => {
+const deletarFunnel = () => {
 
   tabela.value = tabela.value.filter(
     funil => funil.id !== itemToDelete.value.id
@@ -316,8 +359,27 @@ const deletarFunil = () => {
   itemToDelete.value = null
 }
 
-const confirmarDelete = (item) => {
+const confirmDelete = (item) => {
   itemToDelete.value = item
   deleteDialog.value = true
 }
+
+const openEditMensage = (msg) => {
+  mensagemEditando.value = msg
+  textoEditado.value = msg.text
+  dialogEditarMensagem.value = true
+}
+
+const saveEditMensage = () => {
+
+  if (mensagemEditando.value) {
+    mensagemEditando.value.text = textoEditado.value
+  }
+
+  dialogEditarMensagem.value = false
+  mensagemEditando.value = null
+  textoEditado.value = ''
+}
+
+
 </script>

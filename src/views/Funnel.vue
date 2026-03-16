@@ -77,11 +77,12 @@
             </template>
 
             <v-card prepend-icon="mdi-filter-outline" title="Cadastrando Funil" class="">
+              <v-form>
               <v-card-text>
                 <v-row density="comfortable">
 
                   <v-col cols="12" md="3" sm="6">
-                    <v-text-field label="Nome" v-model="name" required></v-text-field>
+                    <v-text-field label="Nome" v-model="name" :rules="[rules.required]"></v-text-field>
 
                     <v-btn class="text-none font-weight-regular" prepend-icon="mdi-plus" text="Criar mensagens"
                       color="primary" @click="dialogMensagem = true"></v-btn>
@@ -107,7 +108,7 @@
                           Cancelar
                         </v-btn>
 
-                        <v-btn color="primary" @click="salvarMensagem">
+                        <v-btn color="primary" @click="saveMessage">
                           Salvar
                         </v-btn>
 
@@ -119,17 +120,17 @@
 
                   <v-col cols="12" md="3" sm="6">
                     <v-select :items="['ABORDAGEM', 'CALL', 'FECHAMENTO', 'FINANCEIRO', 'ONBOARDING', 'SUPORTE']"
-                      label="Departamento" v-model="departament" required></v-select>
+                      label="Departamento" v-model="departament" :rules="[rules.required]"></v-select>
                   </v-col>
 
                   <v-col cols="12" md="3" sm="6">
-                    <v-select :items="['Faculdade Chat', 'Advocacia  Chat']" label="Canal" v-model="channel"
+                    <v-select :items="['Faculdade Chat', 'Advocacia  Chat']" label="Canal" :rules="[rules.required]" v-model="channel "
                       required></v-select>
                   </v-col>
 
                   <v-col cols="12" md="3" sm="6">
                     <v-autocomplete :items="['Enviar para departamento', 'Fechar atendimento']" label="Ação"
-                      v-model="action" required></v-autocomplete>
+                      v-model="action" :rules="[rules.required]"></v-autocomplete>
 
                   </v-col>
                 </v-row>
@@ -151,6 +152,8 @@
                 <v-btn color="primary" text="Salvar" variant="tonal"
                   @click="novoModal = false; adicionarFunil()"></v-btn>
               </v-card-actions>
+            </v-form>
+
             </v-card>
           </v-dialog>
 
@@ -205,7 +208,7 @@
     </v-dialog>
       <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(index)"></v-btn>
 
-      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leeds no funil"></v-btn>
+      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leeds no funil" ></v-btn>
 
       <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed"></v-btn>
 
@@ -333,16 +336,19 @@ const adicionarFunil = () => {
   channel.value = ''
   action.value = ''
 }
-const salvarMensagem = () => {
-  mensagens.value.push({
-    funilId: id_tabela.value,
-    text: newMensagem.value,
-    leads: 0,
-    sends: 1,
-    time: 60
-  })
-  newMensagem.value = ''
-  dialogMensagem.value = false
+const saveMessage = () => {
+  const{validate}=vee-validate
+  console.log(validate)
+
+  // mensagens.value.push({
+  //   funilId: id_tabela.value,
+  //   text: newMensagem.value,
+  //   leads: 0,
+  //   sends: 1,
+  //   time: 60
+  // })
+  // newMensagem.value = ''
+  // dialogMensagem.value = false
 }
 
 const edit = (index) => {
@@ -380,6 +386,10 @@ const saveEditMensage = () => {
   mensagemEditando.value = null
   textoEditado.value = ''
 }
+
+const rules = ref({
+  required: (value) => !!value || 'Campo obrigatório'
+});
 
 
 </script>

@@ -164,13 +164,50 @@
   <v-card v-for="(item, index) in tabela" :key="index" class="mt-5 me-n10 pa-10 pb-16">
     <v-card-actions class="d-flex justify-md-end">
 
-      <v-btn class="mdi mdi-delete-outline" color="#d10d0d" text="Deletar"></v-btn>
+  
+      <v-btn class="mdi mdi-delete-outline" color="#d10d0d" variant="tonal" text="Deletar" @click="confirmarDelete(item)">
 
-      <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" text="Editar" @click="edit(index)"></v-btn>
+      </v-btn>
 
-      <v-btn class="mdi mdi-account-group" color="#121111" text="Leeds no funil"></v-btn>
+     <v-dialog v-model="deleteDialog" max-width="400" >
 
-      <v-btn class="mdi mdi-account-multiple-plus" color="primary" text="Adicionar Leed"></v-btn>
+        <v-card title="Confirmar Exclusão">
+
+          <v-card-text>
+            <p>
+              Você tem certeza que deseja deletar o funil
+              <strong>{{ itemToDelete?.name }}</strong>?
+            </p>
+
+            <p class="text-caption text-error">
+              Esta ação não pode ser desfeita.
+            </p>
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions >
+
+            <v-spacer></v-spacer>
+
+            <v-btn color="primary" variant="text" @click="deleteDialog = false" class="mr-47">
+              Cancelar
+            </v-btn>
+
+            <v-btn color="error" @click="deletarFunil" variant="tonal">
+              Deletar
+            </v-btn>
+
+          </v-card-actions>
+
+        </v-card>
+
+    </v-dialog>
+      <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(index)"></v-btn>
+
+      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leeds no funil"></v-btn>
+
+      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed"></v-btn>
 
     </v-card-actions>
 
@@ -189,23 +226,33 @@
 
         <v-card class="pa-3">
 
-          <v-avatar color="primary">
-            {{ index + 1 }}
-          </v-avatar>
+  <div class="d-flex justify-space-between align-center">
 
-          <div class="mt-2">
-            {{ msg.text }}
-          </div>
+    <div>
 
-        </v-card>
+      <v-avatar color="primary" class="mb-2">
+        {{ index + 1 }}
+      </v-avatar>
 
-      </v-col>
+      <div class="mt-2">
+        {{ msg.text }}
+      </div>
 
-    </v-row>
+    </div>
 
+    <v-btn
+      icon="mdi-pencil"
+      size="small"
+      @click="editarMensagem(msg, index)"
+      variant="tonal"
+    ></v-btn>
 
-  </v-card>
+  </div>
 
+</v-card>
+</v-col>
+</v-row>
+</v-card>
 </template>
 
 <script setup>
@@ -225,6 +272,9 @@ const newMensagem = ref('')
 
 const tabela = ref([])
 const id_tabela = ref(0)
+
+const deleteDialog = ref(false)
+const itemToDelete = ref(null)
 
 const adicionarFunil = () => {
   tabela.value.push({
@@ -254,5 +304,20 @@ const salvarMensagem = () => {
 
 const edit = (index) => {
   console.log('index de edicao', index)
+}
+
+const deletarFunil = () => {
+
+  tabela.value = tabela.value.filter(
+    funil => funil.id !== itemToDelete.value.id
+  )
+
+  deleteDialog.value = false
+  itemToDelete.value = null
+}
+
+const confirmarDelete = (item) => {
+  itemToDelete.value = item
+  deleteDialog.value = true
 }
 </script>

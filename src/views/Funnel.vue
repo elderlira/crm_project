@@ -70,7 +70,7 @@
         </v-dialog>
 
         <div class="text-center">
-          <v-dialog v-model="novoModal" max-width="1200" persistent="true">
+          <v-dialog v-model="newModal" max-width="1200" persistent=true>
             <template v-slot:activator="{ props: activatorProps }">
               <v-btn class="text-none font-weight-regular" prepend-icon="mdi-plus" text="Novo" color="primary"
                 v-bind="activatorProps"></v-btn>
@@ -84,10 +84,10 @@
                   <v-col cols="12" md="3" sm="6">
                     <v-text-field label="Nome" v-model="name" :rules="[rules.required]"></v-text-field>
 
-                    <v-btn class="text-none font-weight-regular" prepend-icon="mdi-plus" text="Criar mensagens"
-                      color="primary" @click="dialogMensagem = true"></v-btn>
+                    <v-btn class="text-none font-weight-regular" prepend-icon="mdi-plus" text="Criar mensagem"
+                      color="primary" @click="dialogMessage = true"></v-btn>
                   </v-col>
-                  <v-dialog v-model="dialogMensagem" width="500" persistent="true">
+                  <v-dialog v-model="dialogMessage" width="500" persistent=true>
 
                     <v-card>
 
@@ -97,14 +97,14 @@
 
                       <v-card-text>
 
-                        <v-textarea v-model="newMensagem" label="Digite a mensagem" rows="4"
+                        <v-textarea v-model="newMessage" label="Digite a mensagem" rows="4"
                           variant="outlined"></v-textarea>
 
                       </v-card-text>
 
                       <v-card-actions class="justify-end">
 
-                        <v-btn variant="text" @click="dialogMensagem = false">
+                        <v-btn variant="text" @click="dialogMessage = false">
                           Cancelar
                         </v-btn>
 
@@ -147,10 +147,10 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
 
-                <v-btn text="Sair" variant="plain" @click="novoModal = false"></v-btn>
+                <v-btn text="Sair" variant="plain" @click="newModal = false"></v-btn>
 
                 <v-btn color="primary" text="Salvar" variant="tonal"
-                  @click="novoModal = false; adicionarFunil()"></v-btn>
+                  @click="newModal = false; adicionarFunil()"></v-btn>
               </v-card-actions>
             </v-form>
 
@@ -164,7 +164,7 @@
 
   </v-sheet>
 
-  <v-card v-for="(item, index) in tabela" :key="index" class="mt-5 me-n10 pa-10 pb-16">
+  <v-card v-for="(item, index) in table" :key="index" class="mt-5 me-n10 pa-10 pb-16">
     <v-card-actions class="d-flex justify-md-end">
 
   
@@ -208,15 +208,36 @@
     </v-dialog>
       <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(index)"></v-btn>
 
-      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leeds no funil" ></v-btn>
+      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
+      <v-dialog
+      v-model="funnilLeads"
+      max-width="600"
+      persistent=true
+    >
+      <template v-slot:activator="{ props: activatorProps }">
+<v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
+      </template>
+      <template v-slot:default="{ isActive }">
+        <div v-if="formLeadsSave">
+          <v-data-table :items="formLeadsSave" hide-default-footer> </v-data-table>
+          <v-btn text="ok" @click="funnilLeads = !funnilLeads">
 
-      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addleed = true" ></v-btn>
+          </v-btn>
+        </div>
+        <div v-else>
+          {{ "Sem dados" }}
+        </div>
+      </template>
+      </v-dialog>
+
+      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addlead = true" ></v-btn>
         <template>
   <div class="pa-4 text-center">
     <v-dialog
-      v-model="addleed"
+      v-model="addlead"
       max-width="600"
-      persistent="true"
+      persistent=true
+
     >
       <template v-slot:activator="{ props: activatorProps }">
         <v-btn
@@ -230,7 +251,7 @@
 
       <v-card
         prepend-icon="mdi-account"
-        title="Informações do Leed"
+        title="Informações do Lead"
       >
         <v-card-text>
           <v-row density="comfortable">
@@ -241,8 +262,9 @@
             >
               <v-text-field
                 label="Nome"
-                form="form.nome"
                 :rules="[(v) => !!v || 'Nome é obrigatório']"
+                v-model="formLead.nome"
+
               ></v-text-field>
             </v-col>
 
@@ -256,7 +278,7 @@
                 type="text"
                 label="Telefone"
                 form="form.telefone"
-                v-model="telephone"
+                v-model="formLead.telephone"
                 :rules="telephoneRules"
                 maxlength="11"
 
@@ -271,12 +293,11 @@
             >
               <v-text-field
                 label="Etiqueta"
-                form="form.etiqueta"
-                persistent-hint
+                persistent-hint=true
                 :rules="[(v) => !!v || 'Etiqueta é obrigatório']"
+                v-model="formLead.etiqueta"
               ></v-text-field>
             </v-col>
-
             <v-col
               cols="12"
               md="6"
@@ -284,14 +305,14 @@
             >
               <v-select
                 label="Estado"
-                form="form.estado"
-                :items="['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernanmbuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins']"
+                :items=estados
                 :rules="[(v) => !!v || 'Estado é obrigatório']"
+                v-model="formLead.estado"
               ></v-select>
             </v-col>
           </v-row>
 
-          <small class="text-body-small text-medium-emphasis">*indicates required field</small>
+          <small class="text-body-small text-medium-emphasis">*Preencha as colunas</small>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -302,15 +323,14 @@
           <v-btn
             text="Cancelar"
             variant="plain"
-            @click="addleed = false"
+            @click="addlead = false"
           ></v-btn>
 
           <v-btn
             color="primary"
             text="Salvar"
             variant="tonal"
-            @click="addleed = false"
-            :disabled="!form.nome || !form.telefone || !form.etiqueta || !form.estado"
+            @click=addNewLead
           ></v-btn>
         </v-card-actions>
       </v-card>
@@ -331,7 +351,7 @@
     </v-card-subtitle>
     <v-row class="mt-6" >
 
-      <v-col v-for="(msg, index) in mensagens.filter((m) => m.funilId === item.id)" :key="index" cols="12" md="4">
+      <v-col v-for="(msg, index) in menssage.filter((m) => m.funilId === item.id)" :key="index" cols="12" md="4">
 
         <v-card class="pa-3">
 
@@ -358,7 +378,7 @@
 
   </div>
 
-  <v-dialog v-model="dialogEditarMensagem" max-width="500">
+  <v-dialog v-model="dialogEditMessage" max-width="500">
 
   <v-card>
 
@@ -369,7 +389,7 @@
     <v-card-text>
 
       <v-textarea
-        v-model="textoEditado"
+        v-model="textEdit"
         label="Editar mensagem"
         rows="4"
         variant="outlined"
@@ -383,7 +403,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn variant="text" @click="dialogEditarMensagem = false">
+      <v-btn variant="text" @click="dialogEditMessage = false">
         Cancelar
       </v-btn>
 
@@ -407,40 +427,66 @@
 import { ref, shallowRef } from 'vue'
 
 const dialog = ref(false)
-const addleed = ref(false)
-const novoModal = shallowRef(false)
+const addlead = ref(false)
+const newModal = shallowRef(false)
 
 const name = ref('')
 const departament = ref('')
 const channel = ref('')
 const action = ref('')
-const dialogMensagem = ref(false)
+const dialogMessage = ref(false)
 
-const mensagens = ref([])
-const newMensagem = ref('')
+const menssage = ref([])
+const newMessage= ref('')
 
-const tabela = ref([])
-const id_tabela = ref(0)
+const table = ref([])
+const id_table = ref(0)
 
 const deleteDialog = ref(false)
 const itemToDelete = ref(null)
 
-const dialogEditarMensagem = ref(false)
-const mensagemEditando = ref(null)
-const textoEditado = ref('')
+const dialogEditMessage = ref(false)
+const messageEdit = ref(null)
+const textEdit = ref('')
 
-const telephone = ref('')
+const formLead = ref([
+  {
+  nome:'',
+  etiqueta:'',
+  telefone:'',
+  estado:''
 
-const form = ref({
-  nome: '',
-  telefone: '',
-  etiqueta: '',
-  estado: ''
-})
+}
+])
+
+const estados=['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernanmbuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins']
+
+const formLeadsSave=ref([])
+
+const funnilLeads=ref(false)
+const openFunnilLead = ()=>{
+  funnilLeads.value=true
+}
+
+const addNewLead = () => {
+
+  formLeadsSave.value.push(
+    {
+      name:formLead.value.nome,
+      etiqueta:formLead.value.etiqueta,
+      telefone:formLead.value.telephone,
+      estado:formLead.value.estado
+
+    }
+  )
+  addlead.value=false
+    console.log(formLeadsSave.value)
+
+}
 
 const adicionarFunil = () => {
-  tabela.value.push({
-    id: id_tabela.value++,
+  table.value.push({
+    id: id_table.value++,
     name: name.value,
     departament: departament.value,
     channel: channel.value,
@@ -453,18 +499,16 @@ const adicionarFunil = () => {
   action.value = ''
 }
 const saveMessage = () => {
-  // const{validate}=vee-validate
-  // console.log(validate)
 
-  mensagens.value.push({
-    funilId: id_tabela.value,
-    text: newMensagem.value,
+  menssage.value.push({
+    funilId: id_table.value,
+    text: newMessage.value,
     leads: 0,
     sends: 1,
     time: 60
   })
-  newMensagem.value = ''
-  dialogMensagem.value = false
+  newMessage.value = ''
+  dialogMessage.value = false
 }
 
 const edit = (index) => {
@@ -473,7 +517,7 @@ const edit = (index) => {
 
 const deletarFunnel = () => {
 
-  tabela.value = tabela.value.filter(
+  table.value = table.value.filter(
     funil => funil.id !== itemToDelete.value.id
   )
 
@@ -487,20 +531,20 @@ const confirmDelete = (item) => {
 }
 
 const openEditMensage = (msg) => {
-  mensagemEditando.value = msg
-  textoEditado.value = msg.text
-  dialogEditarMensagem.value = true
+  messageEdit.value = msg
+  textEdit.value = msg.text
+  dialogEditMessage.value = true
 }
 
 const saveEditMensage = () => {
 
-  if (mensagemEditando.value) {
-    mensagemEditando.value.text = textoEditado.value
+  if (messageEdit.value) {
+    messageEdit.value.text = textEdit.value
   }
 
-  dialogEditarMensagem.value = false
-  mensagemEditando.value = null
-  textoEditado.value = ''
+  dialogEditMessage.value = false
+  messageEdit.value = null
+  textEdit.value = ''
 }
 
 const rules = ref({
@@ -511,5 +555,4 @@ const telephoneRules = [
   v => !!v || 'Telefone é obrigatório',
   v => /^[0-9]{10,11}$/.test(v) || 'Telefone inválido (DDD + número)'
 ]
-
 </script>

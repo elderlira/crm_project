@@ -210,7 +210,113 @@
 
       <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leeds no funil" ></v-btn>
 
-      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed"></v-btn>
+      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addleed = true" ></v-btn>
+        <template>
+  <div class="pa-4 text-center">
+    <v-dialog
+      v-model="addleed"
+      max-width="600"
+      persistent="true"
+    >
+      <template v-slot:activator="{ props: activatorProps }">
+        <v-btn
+          class="text-none font-weight-regular"
+          prepend-icon="mdi-account"
+          text="Edit Profile"
+          variant="tonal"
+          v-bind="activatorProps"
+        ></v-btn>
+      </template>
+
+      <v-card
+        prepend-icon="mdi-account"
+        title="Informações do Leed"
+      >
+        <v-card-text>
+          <v-row density="comfortable">
+            <v-col
+              cols="12"
+              md="6"
+              sm="6"
+            >
+              <v-text-field
+                label="Nome"
+                form="form.nome"
+                :rules="[(v) => !!v || 'Nome é obrigatório']"
+              ></v-text-field>
+            </v-col>
+
+            <v-col
+              cols="12"
+              md="6"
+              sm="6"
+            >
+              <v-text-field
+                hint="o formato DDD + número . "
+                type="text"
+                label="Telefone"
+                form="form.telefone"
+                v-model="telephone"
+                :rules="telephoneRules"
+                maxlength="11"
+
+                
+              ></v-text-field>
+            </v-col>
+
+            <v-col
+              cols="12"
+              md="6"
+              sm="6"
+            >
+              <v-text-field
+                label="Etiqueta"
+                form="form.etiqueta"
+                persistent-hint
+                :rules="[(v) => !!v || 'Etiqueta é obrigatório']"
+              ></v-text-field>
+            </v-col>
+
+            <v-col
+              cols="12"
+              md="6"
+              sm="6"
+            >
+              <v-select
+                label="Estado"
+                form="form.estado"
+                :items="['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernanmbuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins']"
+                :rules="[(v) => !!v || 'Estado é obrigatório']"
+              ></v-select>
+            </v-col>
+          </v-row>
+
+          <small class="text-body-small text-medium-emphasis">*indicates required field</small>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text="Cancelar"
+            variant="plain"
+            @click="addleed = false"
+          ></v-btn>
+
+          <v-btn
+            color="primary"
+            text="Salvar"
+            variant="tonal"
+            @click="addleed = false"
+            :disabled="!form.nome || !form.telefone || !form.etiqueta || !form.estado"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
+</template>
 
     </v-card-actions>
 
@@ -301,6 +407,7 @@
 import { ref, shallowRef } from 'vue'
 
 const dialog = ref(false)
+const addleed = ref(false)
 const novoModal = shallowRef(false)
 
 const name = ref('')
@@ -322,6 +429,15 @@ const dialogEditarMensagem = ref(false)
 const mensagemEditando = ref(null)
 const textoEditado = ref('')
 
+const telephone = ref('')
+
+const form = ref({
+  nome: '',
+  telefone: '',
+  etiqueta: '',
+  estado: ''
+})
+
 const adicionarFunil = () => {
   tabela.value.push({
     id: id_tabela.value++,
@@ -337,18 +453,18 @@ const adicionarFunil = () => {
   action.value = ''
 }
 const saveMessage = () => {
-  const{validate}=vee-validate
-  console.log(validate)
+  // const{validate}=vee-validate
+  // console.log(validate)
 
-  // mensagens.value.push({
-  //   funilId: id_tabela.value,
-  //   text: newMensagem.value,
-  //   leads: 0,
-  //   sends: 1,
-  //   time: 60
-  // })
-  // newMensagem.value = ''
-  // dialogMensagem.value = false
+  mensagens.value.push({
+    funilId: id_tabela.value,
+    text: newMensagem.value,
+    leads: 0,
+    sends: 1,
+    time: 60
+  })
+  newMensagem.value = ''
+  dialogMensagem.value = false
 }
 
 const edit = (index) => {
@@ -391,5 +507,9 @@ const rules = ref({
   required: (value) => !!value || 'Campo obrigatório'
 });
 
+const telephoneRules = [
+  v => !!v || 'Telefone é obrigatório',
+  v => /^[0-9]{10,11}$/.test(v) || 'Telefone inválido (DDD + número)'
+]
 
 </script>

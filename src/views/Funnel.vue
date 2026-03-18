@@ -208,19 +208,19 @@
     </v-dialog>
       <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(index)"></v-btn>
 
-      <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
       <v-dialog
       v-model="funnilLeads"
       max-width="600"
       persistent=true
     >
       <template v-slot:activator="{ props: activatorProps }">
-<v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
-      </template>
-      <template v-slot:default="{ isActive }">
-        <div v-if="formLeadsSave">
-          <v-data-table :items="formLeadsSave" hide-default-footer> </v-data-table>
-          <v-btn text="ok" @click="funnilLeads = !funnilLeads">
+        <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <div v-if="formLeadsSave">
+                  
+                  <v-data-table :items="formLeadsSave" hide-default-footer class="pa-8" > </v-data-table>
+                  <v-btn class="d-flex ml-68 mt-5" text="ok" @click="funnilLeads = !funnilLeads">
 
           </v-btn>
         </div>
@@ -230,7 +230,7 @@
       </template>
       </v-dialog>
 
-      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addlead = true" ></v-btn>
+      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addlead = true; clear()" ></v-btn>
         <template>
   <div class="pa-4 text-center">
     <v-dialog
@@ -330,7 +330,7 @@
             color="primary"
             text="Salvar"
             variant="tonal"
-            @click=addNewLead
+            @click=addNewLead 
           ></v-btn>
         </v-card-actions>
       </v-card>
@@ -546,7 +546,14 @@ const saveEditMensage = () => {
   messageEdit.value = null
   textEdit.value = ''
 }
-
+const clear = () =>{
+  formLead.value={
+    nome:'',
+    etiqueta:'',
+    telefone:'',
+    estado:''
+  }
+}
 const rules = ref({
   required: (value) => !!value || 'Campo obrigatório'
 });

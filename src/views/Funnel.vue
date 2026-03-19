@@ -164,7 +164,7 @@
 
   </v-sheet>
 
-<v-card v-for="item in table" :key="item.id" class="ml-8 mr-8 mt-10 mb-5 pb-16">
+<v-card v-for="(item, index) in table" :key="item.id"class="ml-8 mr-8 mt-10 mb-5 pb-16">
     <v-card-actions class="d-flex mt-4 justify-md-end">
 
   
@@ -206,7 +206,7 @@
         </v-card>
 
     </v-dialog>
-      <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(index)"></v-btn>
+      <v-btn class="mdi mdi-pencil-outline" color="#c25b0c" variant="outlined" text="Editar" @click="edit(item,index)"></v-btn>
 
       <v-dialog
       v-model="funnilLeads"
@@ -503,18 +503,36 @@ const addNewLead = () => {
 }
 
 const adicionarFunil = () => {
-  table.value.push({
-    id: id_table.value++,
-    name: name.value,
-    departament: departament.value,
-    channel: channel.value,
-    action: action.value
-  })
+
+  if (editIndex.value !== null) {
+
+    table.value[editIndex.value] = {
+      ...table.value[editIndex.value],
+      name: name.value,
+      departament: departament.value,
+      channel: channel.value,
+      action: action.value
+    }
+
+    editIndex.value = null
+
+  } else {
+
+    table.value.push({
+      id: id_table.value++,
+      name: name.value,
+      departament: departament.value,
+      channel: channel.value,
+      action: action.value
+    })
+
+  }
 
   name.value = ''
   departament.value = ''
   channel.value = ''
   action.value = ''
+
 }
 const saveMessage = () => {
 
@@ -529,8 +547,21 @@ const saveMessage = () => {
   dialogMessage.value = false
 }
 
-const edit = (index) => {
-  console.log('index de edicao', index)
+const editIndex = ref(null)
+
+const funilEditandoId = ref(null)
+
+const edit = (item, index) => {
+
+  name.value = item.name
+  departament.value = item.departament
+  channel.value = item.channel
+  action.value = item.action
+
+  editIndex.value = index
+   funilEditandoId.value = item.id
+
+  newModal.value = true
 }
 
 const deletarFunnel = () => {

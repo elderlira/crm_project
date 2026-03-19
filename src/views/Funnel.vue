@@ -164,8 +164,8 @@
 
   </v-sheet>
 
-<v-card v-for="item in table" :key="item.id" class="mt-5 me-n10 pa-10 pb-16">
-    <v-card-actions class="d-flex justify-md-end">
+<v-card v-for="item in table" :key="item.id" class="ml-8 mr-8 mt-10 mb-5 pb-16">
+    <v-card-actions class="d-flex mt-4 justify-md-end">
 
   
       <v-btn class="mdi mdi-delete-outline" color="#d10d0d" variant="tonal" text="Deletar" @click="confirmDelete(item)">
@@ -353,7 +353,7 @@
 
       <v-col v-for="(msg, index) in menssage.filter((m) => m.funilId === item.id)" :key="index" cols="12" md="4">
 
-        <v-card class="pa-3">
+        <v-card class="ml-4  pa-3">
 
   <div class="d-flex justify-space-between align-center">
 

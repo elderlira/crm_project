@@ -277,8 +277,8 @@
                 hint="o formato DDD + número . "
                 type="text"
                 label="Telefone"
-                form="form.telefone"
-                v-model="formLead.telephone"
+                form="form.telephone"
+                v-model="formLead.telefone"
                 :rules="telephoneRules"
                 maxlength="11"
 

@@ -164,7 +164,7 @@
 
   </v-sheet>
 
-  <v-card v-for="(item, index) in table" :key="index" class="mt-5 me-n10 pa-10 pb-16">
+<v-card v-for="item in table" :key="item.id" class="mt-5 me-n10 pa-10 pb-16">
     <v-card-actions class="d-flex justify-md-end">
 
   
@@ -214,12 +214,12 @@
       persistent=true
     >
       <template v-slot:activator="{ props: activatorProps }">
-        <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead"></v-btn>
+        <v-btn class="mdi mdi-account-group" color="#121111" variant="outlined" text="Leads no funil" @click="openFunnilLead(item.id)"></v-btn>
               </template>
               <template v-slot:default="{ isActive }">
                 <div v-if="formLeadsSave">
                   
-                  <v-data-table :items="formLeadsSave" hide-default-footer class="pa-8" > </v-data-table>
+                  <v-data-table :headers="headers"  :items="leadsTabela" hide-default-footer class="pa-8" > </v-data-table>
                   <v-btn class="d-flex ml-68 mt-5" text="ok" @click="funnilLeads = !funnilLeads">
 
           </v-btn>
@@ -230,7 +230,7 @@
       </template>
       </v-dialog>
 
-      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="addlead = true; clear()" ></v-btn>
+      <v-btn class="mdi mdi-account-multiple-plus" color="primary" variant="outlined" text="Adicionar Leed" @click="openAddLead(item)" ></v-btn>
         <template>
   <div class="pa-4 text-center">
     <v-dialog
@@ -424,7 +424,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 
 const dialog = ref(false)
 const addlead = ref(false)
@@ -449,39 +449,57 @@ const dialogEditMessage = ref(false)
 const messageEdit = ref(null)
 const textEdit = ref('')
 
-const formLead = ref([
-  {
+const funilAtual = ref(null)
+const leadId = ref(0)
+
+const formLead = ref({
   nome:'',
   etiqueta:'',
   telefone:'',
   estado:''
-
-}
-])
+})
 
 const estados=['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernanmbuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins']
 
 const formLeadsSave=ref([])
 
 const funnilLeads=ref(false)
-const openFunnilLead = ()=>{
-  funnilLeads.value=true
+
+const headers = [
+  { title: 'Nome', key: 'name' },
+  { title: 'Etiqueta', key: 'etiqueta' },
+  { title: 'Telefone', key: 'telefone' },
+  { title: 'Estado', key: 'estado' }
+]
+
+const leadsTabela = computed(() => {
+  return formLeadsSave.value
+    .filter(l => l.funilId === funilAtual.value)
+    .map(l => ({
+      name: l.name,
+      etiqueta: l.etiqueta,
+      telefone: l.telefone,
+      estado: l.estado
+    }))
+})
+
+const openFunnilLead = (id)=>{
+  funilAtual.value = id
+  funnilLeads.value = true
 }
 
 const addNewLead = () => {
 
-  formLeadsSave.value.push(
-    {
-      name:formLead.value.nome,
-      etiqueta:formLead.value.etiqueta,
-      telefone:formLead.value.telephone,
-      estado:formLead.value.estado
+  formLeadsSave.value.push({
+    id: leadId.value++,
+    funilId: funilAtual.value,
+    name: formLead.value.nome,
+    etiqueta: formLead.value.etiqueta,
+    telefone: formLead.value.telefone,
+    estado: formLead.value.estado
+  })
 
-    }
-  )
-  addlead.value=false
-    console.log(formLeadsSave.value)
-
+  addlead.value = false
 }
 
 const adicionarFunil = () => {
@@ -553,6 +571,12 @@ const clear = () =>{
     telefone:'',
     estado:''
   }
+}
+
+const openAddLead = (item) => {
+  funilAtual.value = item.id
+  addlead.value = true
+  clear()
 }
 const rules = ref({
   required: (value) => !!value || 'Campo obrigatório'

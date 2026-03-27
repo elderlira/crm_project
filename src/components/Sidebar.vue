@@ -61,6 +61,12 @@
           <span v-if="isOpen" class="text-body-1">Funil</span>
         </RouterLink>
 
+          <RouterLink to="/auditoria"
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          <v-icon class="text-h5 mr-3" color="#6BB577">mdi-clipboard-edit</v-icon>
+          <span v-if="isOpen" class="text-body-1">Auditoria</span>
+        </RouterLink>
+
         <RouterLink to="/configuracoes"
           class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
           <v-icon class="text-h5 mr-3" color="#A9A9A9">mdi-cog</v-icon>

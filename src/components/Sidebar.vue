@@ -78,17 +78,20 @@
           <v-avatar color="#6495ED">
             <v-icon icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <!-- <span class="text-h4">👤</span> -->
         </v-col>
-        <v-col v-if="isOpen" class="pa-0 pl-3">
-          <div class="text-body-1 font-weight-medium truncate-line">{{ auth.user.username.toUpperCase() }}</div>
-          <div class="text-caption text-purple-400 truncate-line" style="color: #FAEBD7;">{{
-            auth.user.role.toUpperCase() }}</div>
+        
+        <v-col v-if="isOpen && auth?.user" class="pa-0 pl-3">
+          <div class="text-body-1 font-weight-medium truncate-line">
+            {{ auth.user?.username?.toUpperCase() || 'USUÁRIO' }}
+          </div>
+          <div class="text-caption text-purple-400 truncate-line" style="color: #FAEBD7;">
+            {{ auth.user?.role?.toUpperCase() || 'CARGO' }}
+          </div>
         </v-col>
       </v-row>
 
       <v-col cols="auto" class="pa-0">
-        <v-btn v-if="isOpen" @click="logout" size="small" variant="text" color="#8B0000" icon="mdi-logout">
+        <v-btn v-if="isOpen" @click="handleLogout" size="small" variant="text" color="#8B0000" icon="mdi-logout">
         </v-btn>
       </v-col>
     </v-container>
@@ -97,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../services/authStore';
 
@@ -110,9 +113,9 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggle'])
 
-const logout = () => {
-  localStorage.removeItem("access_token")
-  localStorage.removeItem("refresh_token")
+// Função de logout melhorada usando a Store
+const handleLogout = () => {
+  auth.logout()
   router.push("/login")
 }
 </script>

@@ -14,6 +14,8 @@ import '@mdi/font/css/materialdesignicons.css'
 import * as echarts from 'echarts'
 import VueECharts from 'vue-echarts'
 
+import 'vuetify/styles'
+
 import {
   PieChart,
   BarChart,

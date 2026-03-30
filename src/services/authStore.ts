@@ -1,48 +1,58 @@
-import { defineStore } from "pinia";
-import { login } from "./authService";
-import api from "../api/axios"
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import api from '@/api/axios' 
 
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', () => {
+  // Inicializa o estado buscando do localStorage
+  const token = ref(localStorage.getItem('access_token'))
+  const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
-  state: () => ({
-    user: JSON.parse(localStorage.getItem("user") || "null"),
-    token: localStorage.getItem("access_token") || null,
-    refreshToken: localStorage.getItem("refresh_token") || null
-  }),
-
-  actions: {
-
-    async signIn(email: string, password: string) {
-
-      const data = await login({email, password})
-
-        this.token = data.access_token
-        this.refreshToken = data.refresh_token
-        this.user = data.user
-        
-        localStorage.setItem("access_token", data.access_token)
-        localStorage.setItem("refresh_token", data.refresh_token)
-        localStorage.setItem("user", JSON.stringify(data.user) 
-      )
-    },
-
-    logout() {
-      this.token = null
-      this.user = null
-  
-      localStorage.removeItem("access_token")
-      localStorage.removeItem("refresh_token")
-      localStorage.removeItem("user")
-    },
-
-    async loadUser() {
-
-      const response = await api.get("/auth/me")
-    
-      this.user = response.data
-      localStorage.setItem("user", JSON.stringify(response.data))
-    
+  async function loadUser() {
+    try {
+      const response = await api.get('me/') 
+      // CORREÇÃO: No Setup Store, não se usa 'this'. Usa-se o .value
+      user.value = response.data
+      localStorage.setItem('user', JSON.stringify(response.data))
+    } catch (error) {
+      console.error("Erro ao carregar usuário:", error)
+      if (error.response?.status === 401) logout()
     }
-  },
+  }
+  
+  // CORREÇÃO: O seu Login.vue chama 'signIn', então vamos padronizar o nome
+  async function signIn(email, password) {
+    try {
+      // Ajuste a rota de login conforme o seu Django (ex: 'login/' ou 'token/')
+      const response = await api.post('login/', { email, password })
+      
+      // O Django SimpleJWT geralmente retorna 'access' e 'refresh'
+      const accessToken = response.data.access || response.data.access_token
+      
+      token.value = accessToken
+      user.value = response.data.user
+      
+      localStorage.setItem('access_token', accessToken)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+      
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
 
+  function logout() {
+    token.value = null
+    user.value = null
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('user')
+    // Opcional: router.push('/login')
+  }
+
+  return { 
+    token, 
+    user, 
+    loadUser, 
+    signIn, // Agora o Login.vue vai encontrar esta função
+    logout 
+  }
 })

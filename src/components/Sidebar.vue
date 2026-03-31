@@ -80,10 +80,13 @@
           </v-avatar>
           <!-- <span class="text-h4">👤</span> -->
         </v-col>
-        <v-col v-if="isOpen" class="pa-0 pl-3">
-          <div class="text-body-1 font-weight-medium truncate-line">{{ auth.user.username.toUpperCase() }}</div>
-          <div class="text-caption text-purple-400 truncate-line" style="color: #FAEBD7;">{{
-            auth.user.role.toUpperCase() }}</div>
+        <v-col v-if="isOpen && auth.user" class="pa-0 pl-3">
+          <div class="text-body-1 font-weight-medium truncate-line">
+            {{ auth.user?.username?.toUpperCase() }}
+          </div>
+          <div class="text-caption truncate-line" style="color: #FAEBD7;">
+            {{ auth.user?.role?.toUpperCase() }}
+          </div>
         </v-col>
       </v-row>
 
@@ -111,8 +114,7 @@ const props = defineProps<{
 const emit = defineEmits(['toggle'])
 
 const logout = () => {
-  localStorage.removeItem("access_token")
-  localStorage.removeItem("refresh_token")
+  auth.logout()
   router.push("/login")
 }
 </script>

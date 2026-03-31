@@ -3,29 +3,31 @@ import { ref } from 'vue'
 import api from '@/api/axios' 
 
 export const useAuthStore = defineStore('auth', () => {
-  // Inicializa o estado buscando do localStorage
-  const token = ref(localStorage.getItem('access_token'))
+  // Inicializa o estado buscando do localStorage e limpa aspas extras do token
+  const token = ref(localStorage.getItem('access_token')?.replace(/"/g, "") || null)
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
+  // Função para carregar os dados do usuário logado (Perfil)
   async function loadUser() {
     try {
       const response = await api.get('me/') 
-      // CORREÇÃO: No Setup Store, não se usa 'this'. Usa-se o .value
       user.value = response.data
       localStorage.setItem('user', JSON.stringify(response.data))
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao carregar usuário:", error)
-      if (error.response?.status === 401) logout()
+      // Se o token estiver expirado ou inválido (401), desloga
+      if (error.response?.status === 401) {
+        logout()
+      }
     }
   }
   
-  // CORREÇÃO: O seu Login.vue chama 'signIn', então vamos padronizar o nome
+  // Função de Login (SignIn)
   async function signIn(email, password) {
     try {
-      // Ajuste a rota de login conforme o seu Django (ex: 'login/' ou 'token/')
       const response = await api.post('login/', { email, password })
       
-      // O Django SimpleJWT geralmente retorna 'access' e 'refresh'
+      // Pega o token (ajustado para o padrão do seu Django)
       const accessToken = response.data.access || response.data.access_token
       
       token.value = accessToken
@@ -36,23 +38,30 @@ export const useAuthStore = defineStore('auth', () => {
       
       return response.data
     } catch (error) {
+      console.error("Erro no login:", error)
       throw error
     }
   }
 
+  // Função de Logout
   function logout() {
     token.value = null
     user.value = null
     localStorage.removeItem('access_token')
     localStorage.removeItem('user')
-    // Opcional: router.push('/login')
+    localStorage.clear() // Limpeza total por segurança
+    
+    // Força o redirecionamento para o login se necessário
+    window.location.href = '/login'
   }
 
+  // CRITICAL: Tudo o que você quer usar nos componentes (Sidebar, App, etc) 
+  // precisa estar neste return!
   return { 
     token, 
     user, 
     loadUser, 
-    signIn, // Agora o Login.vue vai encontrar esta função
+    signIn, 
     logout 
   }
 })

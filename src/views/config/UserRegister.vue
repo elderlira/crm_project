@@ -14,17 +14,36 @@
         :loading="loading"
         class="elevation-1 mt-4"
       >
-        <template v-slot:item.role_name="{ item }">
-          <v-chip color="deep-purple" size="small" dark>
-            {{ String(item.role_name || 'COLABORADOR').toUpperCase() }}
-          </v-chip>
-        </template>
+      <template v-slot:item.phone="{ item }">
+        {{ item.phone || '---' }}
+      </template>
 
-        <template v-slot:item.actions="{ item }">
-          <v-icon size="small" class="me-2" color="blue" @click="editItem(item)">mdi-pencil</v-icon>
-          <v-icon size="small" color="red" @click="deleteItem(item)">mdi-delete</v-icon>
-        </template>
-      </v-data-table>
+      <template v-slot:item.is_online="{ item }">
+    <v-chip
+      :color="item.is_online ? 'success' : 'grey-lighten-1'"
+      size="small"
+      class="font-weight-bold"
+      label
+    >
+      <v-icon start icon="mdi-circle" size="10" v-if="item.is_online"></v-icon>
+      {{ item.is_online ? 'ON' : 'OFF' }}
+    </v-chip>
+  </template>
+
+  <template v-slot:item.last_login_at="{ item }">
+    <span class="text-caption">{{ item.last_login_at || 'Nunca' }}</span>
+  </template>
+
+  <template v-slot:item.last_logout_at="{ item }">
+    <span class="text-caption">{{ item.last_logout_at || '---' }}</span>
+  </template>
+
+    <template v-slot:item.actions="{ item }">
+      <v-icon size="small" class="me-2" color="blue" @click="editItem(item)">mdi-pencil</v-icon>
+      <v-icon size="small" color="red" @click="deleteItem(item)">mdi-delete</v-icon>
+    </template>
+  </v-data-table>
+      
     </v-card>
 
     <v-dialog v-model="dialog" max-width="600px" persistent>
@@ -42,6 +61,18 @@
               <v-col cols="12" sm="6">
                 <v-text-field v-model="editedItem.email" label="E-mail" variant="outlined"></v-text-field>
               </v-col>
+
+              <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="editedItem.phone"
+                label="Celular (Apenas números)"
+                placeholder="71988887777"
+                variant="outlined"
+                maxlength="11"
+                counter
+              ></v-text-field>
+            </v-col>
+
               <v-col cols="12" sm="6" v-if="!editedItem.id">
                 <v-text-field v-model="editedItem.password" label="Senha" type="password" variant="outlined"></v-text-field>
               </v-col>
@@ -90,6 +121,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
+import { title } from 'process'
 
 const dialog = ref(false)
 const loading = ref(false)
@@ -100,9 +132,13 @@ const allDepartments = ref([]) // Lista completa do backend
 
 const headers = [
   { title: 'Usuário', key: 'username' },
+  {title:'Celular',key:'phone'},
   { title: 'Cargo', key: 'role_name' },
   { title: 'Empresa', key: 'company_name' },
   { title: 'Departamento', key: 'department_name' },
+  { title: 'Online', key: 'is_online' }, 
+  { title: 'Último Login', key: 'last_login_at' }, 
+  { title: 'Último Logout', key: 'last_logout_at' },
   { title: 'Ações', key: 'actions', sortable: false },
 ]
 

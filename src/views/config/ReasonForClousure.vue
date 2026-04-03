@@ -1,6 +1,6 @@
 <template>
   <v-sheet border rounded>
-    <v-data-table :headers="headers" :hide-default-footer="books.length < 11" :items="books">
+    <v-data-table :headers="headers" :hide-default-footer="reasons.length < 11" :items="reasons">
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>
@@ -21,9 +21,9 @@
           </template>
         </v-chip>
       </template>
-      <template v-slot:item.ativo="{ item }">
-        <v-icon :color="item.ativo ? 'success' : 'error'">
-          {{ item.ativo ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+      <template v-slot:item.active="{ item }">
+        <v-icon :color="item.active ? 'success' : 'error'">
+          {{ item.active ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
         </v-icon>
       </template>
 
@@ -88,7 +88,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, shallowRef, toRef } from 'vue'
+import { onMounted, ref, shallowRef, computed } from 'vue'
+import api from "../../api/axios"
 
 const currentYear = new Date().getFullYear()
 
@@ -97,23 +98,23 @@ function createNewRecord() {
     motivo: '',
     funil: '',
     departamento: '',
-    ativo: ref(false),
+    ativo: false,
     mensagem: '',
   }
 }
 
-const books = ref([])
+const reasons = ref([])
 const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
-const isEditing = toRef(() => !!formModel.value.id)
+const isEditing = computed(() => !!formModel.value.id)
 
 const headers = [
   { title: 'Id', key: 'id', align: 'start' },
-  { title: 'Motivo', key: 'motivo' },
-  { title: 'Funil', key: 'funil' },
-  { title: 'Departamentos', key: 'departamento', align: 'ceenter' },
-  { title: 'Ativo', key: 'ativo', align: 'center' },
-  { title: 'Mensagem de fechamento', key: 'mensagem', align: 'center' },
+  { title: 'Motivo', key: 'reason' },
+  { title: 'Funil', key: 'funnel' },
+  { title: 'Departamentos', key: 'department', align: 'center' },
+  { title: 'Ativo', key: 'active', align: 'center' },
+  { title: 'Mensagem de fechamento', key: 'message', align: 'center' },
   { title: 'Ações', key: 'actions', align: 'end', sortable: false },
 ]
 
@@ -122,7 +123,7 @@ const funilItens = ['CALL AGENDADA', 'SEM FUNIL', 'CALL REALIZADA', 'LEADS RETOR
 const departamentosItens = ['DEPARTAMENTO 1', 'DEPARTAMENTO 2', 'DEPARTAMENTO 3']
 
 onMounted(() => {
-  reset()
+  loadReasons()
 })
 
 function add() {
@@ -131,32 +132,58 @@ function add() {
 }
 
 function edit(id) {
-  const found = books.value.find(book => book.id === id)
+  const found = reasons.value.find(reason => reason.id === id)
 
   formModel.value = {
     id: found.id,
-    motivo: found.motivo,
-    funil: found.funil,
-    departamento: found.departamento,
-    ativo: found.ativo,
-    mensagem: found.mensagem,
+    motivo: found.reason,
+    funil: found.funnel,
+    departamento: found.department,
+    ativo: found.active,
+    mensagem: found.message,
   }
 
   dialog.value = true
 }
 
-function remove(id) {
-  const index = books.value.findIndex(book => book.id === id)
-  books.value.splice(index, 1)
+async function remove(id) {
+
+  try {
+    await api.delete(`/closing-reasons/${id}/`)
+    await loadReasons()
+  } catch (e) {
+    console.error("Motivo de erro na exclusao: ", e)
+  }
 }
 
-function save() {
-  if (isEditing.value) {
-    const index = books.value.findIndex(book => book.id === formModel.value.id)
-    books.value[index] = formModel.value
-  } else {
-    formModel.value.id = books.value.length + 1
-    books.value.push(formModel.value)
+async function save() {
+
+  const payload = {
+    reason: formModel.value.motivo,
+    funnel: formModel.value.funil,
+    department: formModel.value.departamento,
+    message: formModel.value.mensagem,
+    active: formModel.value.ativo
+  }
+
+  try {
+
+    if (isEditing.value) {
+
+      await api.put(`/closing-reasons/${formModel.value.id}/`, payload)
+
+    } else {
+
+      await api.post(`/closing-reasons/`, payload)
+
+    }
+
+    await loadReasons()
+
+  } catch (e) {
+
+    console.error("Erro ao salvar:", e)
+
   }
 
   dialog.value = false
@@ -165,13 +192,15 @@ function save() {
 function reset() {
   dialog.value = false
   formModel.value = createNewRecord()
-  books.value = [
-    { id: 1, motivo: 'fechamento 1', funil: 'call agendada', departamento: 'Fiction', ativo: true, mensagem: 'texto 1' },
-    { id: 2, motivo: 'fechamento 2', funil: 'call realizada', departamento: 'Dystopian', ativo: true, mensagem: 'texto 2' },
-    { id: 3, motivo: 'fechamento 3', funil: 'retorno', departamento: 'Fiction', ativo: true, mensagem: 'texto 3' },
-    { id: 4, motivo: 'fechamento 4', funil: 'sem funil', departamento: 'Non-Fiction', ativo: true, mensagem: 'texto 4' },
-    { id: 5, motivo: 'fechamento 5', funil: 'sem agenda', departamento: 'Sci-Fi', ativo: true, mensagem: 'texto 5' },
-  ]
+}
+
+const loadReasons = async () => {
+  try {
+    const response = await api.get("/closing-reasons/")
+    reasons.value = response.data
+  } catch (e) {
+    console.error("motivo do erro", e)
+  }
 }
 
 </script>

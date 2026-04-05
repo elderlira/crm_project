@@ -87,7 +87,8 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../services/authStore';
+import { useAuthStore } from '../services/authStore'
+import api from '@/api/axios' // <--- ADICIONE ESTA LINHA AQUI!
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -98,9 +99,19 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggle'])
 
-const handleLogout = () => {
-  auth.logout()
-  router.push("/login")
+const handleLogout = async () => {
+  console.log("Iniciando logout...");
+  try {
+    // Agora o 'api' vai funcionar porque foi importado acima
+    const response = await api.post("logout/")
+    console.log("Django confirmou o logout:", response.status)
+  } catch (error) {
+    console.error("Django não recebeu o aviso de logout:", error)
+  } finally {
+    // Limpa o estado local e redireciona
+    auth.logout()
+    router.push("/login")
+  }
 }
 </script>
 

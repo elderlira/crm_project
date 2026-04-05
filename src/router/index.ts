@@ -45,15 +45,17 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-
+// Substitua o seu router.beforeEach antigo por este:
+router.beforeEach((to) => {
   const auth = useAuthStore()
 
-  if(to.meta.requiresAuth && !auth.token) {
-    next("/login")
-  } else {
-    next()
+  // Se a rota exige autenticação e o usuário não tem token
+  if (to.meta.requiresAuth && !auth.token) {
+    // Apenas retorne o caminho do login, sem usar next()
+    return { name: 'login' }
   }
+  
+  // Se estiver tudo ok, não precisa retornar nada (ou retorne true)
+  return true
 })
-
 export default router

@@ -87,7 +87,7 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" max-width="500">
+        <v-dialog v-model="dialog" max-width="500" persistent>
             <v-card :title="`${isEditing ? 'Editar' : 'Adicionar'} Usuário`">
                 <template v-slot:text>
                     <v-row>
@@ -108,8 +108,11 @@
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col cols="12" md="12" class="pa-0 ma-0">
+                        <v-col cols="6" md="6" class="pa-1 ma-0">
                             <v-select label="Perfil" :items="perfis" density="compact"></v-select>
+                        </v-col>
+                        <v-col cols="6" md="6" class="pa-1 ma-0">
+                            <v-select label="Empresa" :items="companies" density="compact"></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -149,6 +152,7 @@
 import { number } from 'echarts'
 import { onMounted, ref, shallowRef, toRef } from 'vue'
 import { useBackgroundColor } from 'vuetify/lib/composables/color'
+import api from '../../api/axios'
 
 const search = ref('')
 function createNewRecord() {
@@ -174,6 +178,7 @@ const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
 const isEditing = toRef(() => !!formModel.value.id)
 const menu = ref(false)
+const companies = ref([])
 
 const headers = [
     {
@@ -243,6 +248,16 @@ const users = [
 ]
 
 const perfis = ['Usuário', 'Administrador', 'Supervisor']
+
+async function companiesSearch() {
+
+    await api.get('/companies').then((response) => {
+        companies.value = response.data
+    }).catch((error) => {
+        console.error('Erro ao buscar empresas:', error)
+    })
+
+}
 
 const expanded = ref<number[]>([])
 

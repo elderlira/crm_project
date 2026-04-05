@@ -93,8 +93,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, shallowRef, toRef, reactive } from 'vue'
+import { onMounted, ref, shallowRef, toRef } from 'vue'
 import { useBackgroundColor } from 'vuetify/lib/composables/color'
+import api from "../../api/axios"
+import { useAuthStore } from '../../services/authStore'
+
+const auth = useAuthStore()
 
 const currentYear = new Date().getFullYear()
 
@@ -114,8 +118,8 @@ const menu = ref(false)
 
 const headers = [
     { title: 'Id', key: 'id', align: 'start' },
-    { title: 'Departamento', key: 'departamento' },
-    { title: 'Ativo', key: 'ativo', align: 'center' },
+    { title: 'Departamento', key: 'departament' },
+    { title: 'Ativo', key: 'active', align: 'center' },
     { title: 'Ações', key: 'actions', align: 'center', sortable: false, color: '#792828' },
 ]
 
@@ -146,13 +150,24 @@ function remove(id) {
     books.value.splice(index, 1)
 }
 
-function save() {
-    if (isEditing.value) {
-        const index = books.value.findIndex(book => book.id === formModel.value.id)
-        books.value[index] = formModel.value
-    } else {
-        formModel.value.id = books.value.length + 1
-        books.value.push(formModel.value)
+async function save() {
+
+    const payload = {
+        id: formModel.value.id,
+        name: formModel.value.departamento,
+        message: formModel.value.mensagem,
+        active: formModel.value.ativo,
+        client: auth.user?.id
+    }
+
+    try {
+        if (isEditing.value) {
+            await api.put(`/departments/${formModel.value.id}`, payload)
+        } else {
+            await api.post('/departments/', payload)
+        }
+    } catch (error) {
+        console.error('Error saving department:', error)
     }
 
     dialog.value = false

@@ -104,8 +104,8 @@
                                 density="compact"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-select name="" id="" v-model="formModel.department" :item="departments" density="compact"
-                                label="Departamentos"></v-select>
+                            <v-select name="" id="" v-model="formModel.department" :items="departments"
+                                item-title="name" item-value="id" density="compact" label="Departamentos"></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -185,6 +185,7 @@ import api from '../../api/axios'
 onMounted(() => {
     loadData()
     usersSearch()
+    loadDepartments()
 })
 
 const search = ref('')
@@ -203,8 +204,8 @@ function createNewRecord() {
         password: '',
         number: '',
         outOfMenssage: '',
-        receiveTicket: ref(false),
-        receiveDepartment: ref(false)
+        receiveTicket: false,
+        receiveDepartment: false
     }
 }
 
@@ -228,21 +229,31 @@ const headers = [
     },
     { key: 'email', title: 'E-mail' },
     { key: 'cellphone', title: 'Celular' },
-    { key: 'departament', title: 'Departamento' },
+    { key: 'name', title: 'Departamento' },
     { key: 'perfil', title: 'Perfil' },
     { key: 'uLogin', title: 'Último login' },
     { key: 'uLogout', title: 'Último logout' },
     { key: 'online', title: 'Online' },
     { key: 'actions', title: 'Ações' },
 ]
-const users = []
+const users = ref([])
 
 const perfis = ['Administrador', 'Supervisor', 'Usuário']
+
+
+const loadDepartments = async () => {
+    try {
+        const { data } = await api.get('/departments/')
+        departments.value = data
+    } catch (error) {
+        console.error('Error fetching departments:', error)
+    }
+}
 
 const usersSearch = async () => {
     try {
         const { data } = await api.get('/users/')
-        users.values = data
+        users.value = data
     } catch (error) {
         console.error('Erro to search users:', error)
     }
@@ -271,6 +282,7 @@ const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) =>
             try {
                 const { data } = await api.get(endpoint)
                 field.value = data
+                console.log(field.value)
             } catch (error) {
                 console.error(`Erro to search endpoint: ${endpoint}:`, error)
             }

@@ -154,6 +154,7 @@ const headers = [
 
 onMounted(() => {
     searchCompany()
+    loadDepartments()
 })
 
 const saveCompany = async () => {
@@ -182,7 +183,6 @@ const loadDepartments = async () => {
     } catch (error) {
         console.error('Error fetching departments:', error)
     }
-
 }
 
 function add() {

@@ -44,7 +44,7 @@
             </v-data-table>
         </v-sheet>
 
-        <v-dialog v-model="dialog" max-width="500">
+        <v-dialog v-model="dialog" max-width="500" persistent>
             <v-card :subtitle="`${isEditing ? 'Update' : 'Crie'} seu departamento`"
                 :title="`${isEditing ? 'Editar' : 'Adicionar'} departamento`">
                 <template v-slot:text>
@@ -165,6 +165,7 @@ const saveCompany = async () => {
     } catch (error) {
         console.error('Error saving company:', error)
     }
+    searchCompany()
 }
 
 const searchCompany = async () => {
@@ -230,13 +231,13 @@ async function save() {
         } else {
             await api.post('/departments/', payload)
         }
-
-        await loadDepartments()
     } catch (error) {
         console.error('Error saving department:', error)
     }
 
     dialog.value = false
+
+    await loadDepartments()
 }
 
 </script>

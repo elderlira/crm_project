@@ -244,7 +244,7 @@ const usersSearch = async () => {
         const { data } = await api.get('/users/')
         users.values = data
     } catch (error) {
-        console.error('Erro ao buscar usuários:', error)
+        console.error('Erro to search users:', error)
     }
 }
 
@@ -256,13 +256,13 @@ const saveCompany = async () => {
         await fetchFields([{ endpoint: '/companies/', field: companies }])
 
     } catch (error) {
-        console.error('Erro ao salvar empresa:', error)
+        console.error('Erro to save company:', error)
     }
 }
 
 const endpointsSearch = [
     { endpoint: '/companies/', field: companies },
-    { endpoint: '/department/', field: departments }
+    { endpoint: '/departments/', field: departments }
 ]
 
 const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) => {
@@ -272,7 +272,7 @@ const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) =>
                 const { data } = await api.get(endpoint)
                 field.value = data
             } catch (error) {
-                console.error(`Erro ao buscar ${endpoint}:`, error)
+                console.error(`Erro to search endpoint: ${endpoint}:`, error)
             }
         })
     )
@@ -317,22 +317,13 @@ const save = async () => {
         dialog.value = false
         await usersSearch()
     } catch (error) {
-        console.error('Erro ao salvar usuário:', error)
+        console.error('Erro to user register:', error)
     }
 }
 
 </script>
 
 <style>
-/* .row-blue {
-    background-color: #2196f3 !important;
-    color: white !important;
-}
-
-.row-red {
-    background-color: #f44336 !important;
-    color: white !important;
-} */
 .v-data-table {
     background-color: #32CD32;
     color: white;

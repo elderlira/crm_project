@@ -80,7 +80,6 @@
             </template>
 
             <template v-slot:item.actions="{ item }">
-                <!-- {{ item.id }} -->
                 <v-btn :append-icon="expanded.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
                     :text="expanded.includes(item.id) ? 'Compactar' : 'Mais informações'" size="small" variant="text"
                     @click="toggleRow(item)" />
@@ -92,7 +91,7 @@
                 <template v-slot:text>
                     <v-row>
                         <v-col cols="12" md="6" sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.name" label="Nome" density="compact"></v-text-field>
+                            <v-text-field v-model="formModel.user" label="Nome" density="compact"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
                             <v-text-field v-model="formModel.email" label="E-mail" density="compact"></v-text-field>
@@ -152,11 +151,11 @@
                 <v-divider></v-divider>
 
                 <v-card-actions class="bg-surface-light">
-                    <v-btn text="Cancel" variant="plain" @click="dialog = false"></v-btn>
+                    <v-btn text="Cancelar" variant="plain" @click="dialog = false"></v-btn>
 
                     <v-spacer></v-spacer>
 
-                    <v-btn text="Save" @click="save"></v-btn>
+                    <v-btn text="Salvar" @click="save"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -185,14 +184,13 @@ import api from '../../api/axios'
 onMounted(() => {
     loadData()
     usersSearch()
-    loadDepartments()
 })
 
 const search = ref('')
 function createNewRecord() {
     return {
         id: null,
-        name: '',
+        user: '',
         email: '',
         cellphone: '',
         department: '',
@@ -202,7 +200,6 @@ function createNewRecord() {
         uLogout: '',
         online: '',
         password: '',
-        number: '',
         outOfMenssage: '',
         receiveTicket: false,
         receiveDepartment: false
@@ -223,7 +220,7 @@ const departments = ref([])
 const headers = [
     {
         align: 'start',
-        key: 'name',
+        key: 'user',
         sortable: false,
         title: 'Nome',
     },
@@ -282,7 +279,6 @@ const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) =>
             try {
                 const { data } = await api.get(endpoint)
                 field.value = data
-                console.log(field.value)
             } catch (error) {
                 console.error(`Erro to search endpoint: ${endpoint}:`, error)
             }
@@ -320,6 +316,7 @@ function getRowProps({ item }) {
 }
 
 const save = async () => {
+    console.log(formModel.value)
     try {
         if (isEditing.value) {
             await api.put(`/users/${formModel.value.id}`, formModel.value)
@@ -327,9 +324,11 @@ const save = async () => {
             await api.post('/users/', formModel.value)
         }
         dialog.value = false
-        await usersSearch()
     } catch (error) {
         console.error('Erro to user register:', error)
+    } finally {
+        await usersSearch()
+        await loadDepartments()
     }
 }
 

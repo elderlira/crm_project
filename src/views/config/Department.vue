@@ -4,7 +4,7 @@
             <v-data-table :headers="headers" :hide-default-footer="books.length < 11" :items="books">
                 <template v-slot:item.color="{ item }">
                 </template>
-                <template v-slot:item.ativo="{ item }">
+                <template v-slot:item.active="{ item }">
                     <v-icon :color="item.active === true ? 'success' : 'error'">
                         {{ item.active === true ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
                     </v-icon>
@@ -192,10 +192,12 @@ function add() {
 
 function edit(id) {
     const found = books.value.find(book => book.id === id)
+    console.log(found)
 
     formModel.value = {
         id: found.id,
-        department: found.departament,
+        company: found.company,
+        department: found.name,
         message: found.message,
         active: found.active,
     }
@@ -203,9 +205,14 @@ function edit(id) {
     dialog.value = true
 }
 
-function remove(id) {
-    const index = books.value.findIndex(book => book.id === id)
-    books.value.splice(index, 1)
+const remove = async (id) => {
+    try {
+        await api.delete(`/departments/${id}/`)
+    } catch (error) {
+        console.error('Error to remove department', error)
+    } finally {
+        loadDepartments()
+    }
 }
 
 async function save() {

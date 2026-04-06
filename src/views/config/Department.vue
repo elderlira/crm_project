@@ -5,8 +5,8 @@
                 <template v-slot:item.color="{ item }">
                 </template>
                 <template v-slot:item.ativo="{ item }">
-                    <v-icon :color="item.ativo === true ? 'success' : 'error'">
-                        {{ item.ativo === true ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+                    <v-icon :color="item.active === true ? 'success' : 'error'">
+                        {{ item.active === true ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
                     </v-icon>
                 </template>
                 <template v-slot:top>
@@ -45,19 +45,28 @@
         </v-sheet>
 
         <v-dialog v-model="dialog" max-width="500">
-            <v-card :subtitle="`${isEditing ? 'Update' : 'Create'} your favorite book`"
-                :title="`${isEditing ? 'Editar' : 'Adicionar'} fechamento`">
+            <v-card :subtitle="`${isEditing ? 'Update' : 'Crie'} seu departamento`"
+                :title="`${isEditing ? 'Editar' : 'Adicionar'} departamento`">
                 <template v-slot:text>
                     <v-row>
-                        <v-col cols="12" md="12">
-                            <v-text-field v-model="formModel.departamento" label="nome do departamento"></v-text-field>
+                        <v-col cols="10" md="10" class="pa-1 ma-0">
+                            <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
+                                item-value="id"></v-select>
+                        </v-col>
+                        <v-col cols=2 md=2>
+                            <v-btn icon="mdi-plus" variant="outlined" @click="companyDialog = true" />
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col cols="12" md="12">
+                        <v-col cols="12" md="12" class="pa-1 ma-0">
+                            <v-text-field v-model="formModel.department" label="nome do departamento"></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12" md="12" class="pa-1 ma-0">
                             <v-menu v-model="menu" :close-on-content-click="false" location="left">
                                 <template #activator="{ props }">
-                                    <v-textarea v-model="formModel.mensagem" label="Mensagem"></v-textarea>
+                                    <v-textarea v-model="formModel.message" label="Mensagem"></v-textarea>
                                 </template>
                             </v-menu>
 
@@ -70,9 +79,9 @@
                         <v-col cols="12" md="12">
                             <v-container fluid>
                                 <v-toolbar-title>
-                                    {{ `${formModel.ativo}` == 'true' ? 'Ativo' : 'Inativo' }}
+                                    {{ `${formModel.active}` == 'true' ? 'Ativo' : 'Inativo' }}
                                 </v-toolbar-title>
-                                <v-switch v-model="formModel.ativo" color='primary' hide-details inset></v-switch>
+                                <v-switch v-model="formModel.active" color='primary' hide-details inset></v-switch>
                             </v-container>
                         </v-col>
                     </v-row>
@@ -89,12 +98,25 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="companyDialog" max-width="400" persistent>
+            <v-card title="Adicionar Empresa">
+                <v-card-text>
+                    <v-text-field v-model="companyForm.name" label="Nome da empresa" />
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn text="Cancelar" @click="companyDialog = false" />
+                    <v-btn text="Salvar" @click="saveCompany" />
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, shallowRef, toRef } from 'vue'
-import { useBackgroundColor } from 'vuetify/lib/composables/color'
+// import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from "../../api/axios"
 import { useAuthStore } from '../../services/authStore'
 
@@ -104,28 +126,64 @@ const currentYear = new Date().getFullYear()
 
 function createNewRecord() {
     return {
-        departamento: '',
-        ativo: ref(true),
-        actions: ''
+        company: '',
+        department: '',
+        message: '',
+        active: true,
     }
 }
+
+const companyForm = ref({
+    name: ''
+})
 
 const books = ref([])
 const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
+const companyDialog = shallowRef(false)
 const isEditing = toRef(() => !!formModel.value.id)
 const menu = ref(false)
+const companies = ref([])
 
 const headers = [
     { title: 'Id', key: 'id', align: 'start' },
-    { title: 'Departamento', key: 'departament' },
+    { title: 'Departamento', key: 'name' },
     { title: 'Ativo', key: 'active', align: 'center' },
     { title: 'Ações', key: 'actions', align: 'center', sortable: false, color: '#792828' },
 ]
 
 onMounted(() => {
-    // reset()
+    searchCompany()
 })
+
+const saveCompany = async () => {
+    try {
+        await api.post('/companies/', companyForm.value)
+        companyDialog.value = false
+        companyForm.value.name = ''
+    } catch (error) {
+        console.error('Error saving company:', error)
+    }
+}
+
+const searchCompany = async () => {
+    try {
+        const { data } = await api.get('/companies/')
+        companies.value = data
+    } catch (error) {
+        console.error('Error fetching companies:', error)
+    }
+}
+
+const loadDepartments = async () => {
+    try {
+        const { data } = await api.get('/departments/')
+        books.value = data
+    } catch (error) {
+        console.error('Error fetching departments:', error)
+    }
+
+}
 
 function add() {
     formModel.value = createNewRecord()
@@ -137,9 +195,9 @@ function edit(id) {
 
     formModel.value = {
         id: found.id,
-        departamento: found.departamento,
-        mensagem: found.mensagem,
-        ativo: found.ativo,
+        department: found.departament,
+        message: found.message,
+        active: found.active,
     }
 
     dialog.value = true
@@ -153,19 +211,20 @@ function remove(id) {
 async function save() {
 
     const payload = {
-        id: formModel.value.id,
-        name: formModel.value.departamento,
-        message: formModel.value.mensagem,
-        active: formModel.value.ativo,
-        client: auth.user?.id
+        company: formModel.value.company,
+        name: formModel.value.department,
+        message: formModel.value.message,
+        active: formModel.value.active
     }
 
     try {
         if (isEditing.value) {
-            await api.put(`/departments/${formModel.value.id}`, payload)
+            await api.put(`/departments/${formModel.value.id}/`, payload)
         } else {
             await api.post('/departments/', payload)
         }
+
+        await loadDepartments()
     } catch (error) {
         console.error('Error saving department:', error)
     }

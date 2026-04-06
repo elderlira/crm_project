@@ -92,10 +92,20 @@
                 <template v-slot:text>
                     <v-row>
                         <v-col cols="12" md="6" sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.nome" label="Nome" density="compact"></v-text-field>
+                            <v-text-field v-model="formModel.name" label="Nome" density="compact"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
                             <v-text-field v-model="formModel.email" label="E-mail" density="compact"></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
+                            <v-text-field v-model="formModel.cellphone" label="Contato (DDD + Número)"
+                                density="compact"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
+                            <v-select name="" id="" v-model="formModel.department" :item="departments" density="compact"
+                                label="Departamentos"></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -108,11 +118,16 @@
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col cols="6" md="6" class="pa-1 ma-0">
-                            <v-select label="Perfil" :items="perfis" density="compact"></v-select>
+                        <v-col cols="5" md="5" class="pa-1 ma-0">
+                            <v-select label="Perfil" :items="perfis" density="compact"
+                                v-model="formModel.role"></v-select>
                         </v-col>
-                        <v-col cols="6" md="6" class="pa-1 ma-0">
-                            <v-select label="Empresa" :items="companies" density="compact"></v-select>
+                        <v-col cols="5" md="5" class="pa-1 ma-0">
+                            <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
+                                item-value="id" density="compact"></v-select>
+                        </v-col>
+                        <v-col cols=2 md=2>
+                            <v-btn icon="mdi-plus" variant="outlined" @click="companyDialog = true" density="compact" />
                         </v-col>
                     </v-row>
                     <v-row>
@@ -123,10 +138,10 @@
                     </v-row>
                     <v-row>
                         <v-col cols="12" class="pa-0 ma-0">
-                            <v-checkbox v-model="formModel.reciveTicket" color="primary"
+                            <v-checkbox v-model="formModel.receiveTicket" color="primary"
                                 label="Não receber tickets via distribuição automática" hint-details></v-checkbox>
 
-                            <v-checkbox v-model="formModel.reciveTicket" color="primary"
+                            <v-checkbox v-model="formModel.receiveDepartment" color="primary"
                                 label="Visualizar tickets de outros usuários dos seus departamentos"
                                 hint-details></v-checkbox>
                         </v-col>
@@ -145,6 +160,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="companyDialog" max-width="400" persistent>
+            <v-card title="Adicionar Empresa">
+                <v-card-text>
+                    <v-text-field v-model="companyForm.name" label="Nome da empresa" />
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn text="Cancelar" @click="companyDialog = false" />
+                    <v-btn text="Salvar" @click="saveCompany" />
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -154,31 +182,42 @@ import { onMounted, ref, shallowRef, toRef } from 'vue'
 import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from '../../api/axios'
 
+onMounted(() => {
+    loadData()
+    usersSearch()
+})
+
 const search = ref('')
 function createNewRecord() {
     return {
-        nome: '',
+        id: null,
+        name: '',
         email: '',
-        celular: '',
-        departament: '',
-        perfil: '',
+        cellphone: '',
+        department: '',
+        role: '',
+        company: '',
         uLogin: '',
         uLogout: '',
         online: '',
         password: '',
         number: '',
         outOfMenssage: '',
-        reciveTicket: ref(false),
-        viewTicket: ref(false)
+        receiveTicket: ref(false),
+        receiveDepartment: ref(false)
     }
 }
+
+const companyForm = ref({ name: '' })
 const showPassword = ref(false)
 const books = ref([])
 const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
+const companyDialog = shallowRef(false)
 const isEditing = toRef(() => !!formModel.value.id)
 const menu = ref(false)
 const companies = ref([])
+const departments = ref([])
 
 const headers = [
     {
@@ -188,7 +227,7 @@ const headers = [
         title: 'Nome',
     },
     { key: 'email', title: 'E-mail' },
-    { key: 'celular', title: 'Celular' },
+    { key: 'cellphone', title: 'Celular' },
     { key: 'departament', title: 'Departamento' },
     { key: 'perfil', title: 'Perfil' },
     { key: 'uLogin', title: 'Último login' },
@@ -196,67 +235,51 @@ const headers = [
     { key: 'online', title: 'Online' },
     { key: 'actions', title: 'Ações' },
 ]
-const users = [
-    {
-        id: 1,
-        name: 'Elder Castro Franca Lira',
-        email: 'elderfranca@hotmail.com',
-        celular: '71986325411',
-        departament: 'SUPORTE AO TIME - CS',
-        perfil: 24,
-        uLogin: '02/03/2026 00:10',
-        uLogout: '02/03/2026 00:45',
-        online: 'sim',
-        details: {
-            valor1: 'primeiro item',
-            valor2: 'seguindo item',
-            valor3: 'terceiro item'
-        }
-    },
-    {
-        id: 2,
-        name: 'Elder Castro Franca Lira',
-        email: 'elderfranca@hotmail.com',
-        celular: '71986325411',
-        departament: 'SUPORTE AO TIME - CS',
-        perfil: 24,
-        uLogin: '02/03/2026 00:10',
-        uLogout: '02/03/2026 00:45',
-        online: 'sim',
-        details: {
-            valor1: 'primeiro item',
-            valor2: 'seguindo item',
-            valor3: 'terceiro item'
-        }
-    },
-    {
-        id: 3,
-        name: 'Elder Castro Franca Lira',
-        email: 'elderfranca@hotmail.com',
-        celular: '71986325411',
-        departament: 'SUPORTE AO TIME - CS',
-        perfil: 24,
-        uLogin: '02/03/2026 00:10',
-        uLogout: '02/03/2026 00:45',
-        online: 'sim',
-        details: {
-            valor1: 'primeiro item',
-            valor2: 'seguindo item',
-            valor3: 'terceiro item'
-        }
+const users = []
+
+const perfis = ['Administrador', 'Supervisor', 'Usuário']
+
+const usersSearch = async () => {
+    try {
+        const { data } = await api.get('/users/')
+        users.values = data
+    } catch (error) {
+        console.error('Erro ao buscar usuários:', error)
     }
+}
+
+const saveCompany = async () => {
+    try {
+        await api.post('/companies/', companyForm.value)
+        companyForm.value.name = ''
+        companyDialog.value = false
+        await fetchFields([{ endpoint: '/companies/', field: companies }])
+
+    } catch (error) {
+        console.error('Erro ao salvar empresa:', error)
+    }
+}
+
+const endpointsSearch = [
+    { endpoint: '/companies/', field: companies },
+    { endpoint: '/department/', field: departments }
 ]
 
-const perfis = ['Usuário', 'Administrador', 'Supervisor']
+const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) => {
+    await Promise.all(
+        searches.map(async ({ endpoint, field }) => {
+            try {
+                const { data } = await api.get(endpoint)
+                field.value = data
+            } catch (error) {
+                console.error(`Erro ao buscar ${endpoint}:`, error)
+            }
+        })
+    )
+}
 
-async function companiesSearch() {
-
-    await api.get('/companies').then((response) => {
-        companies.value = response.data
-    }).catch((error) => {
-        console.error('Erro ao buscar empresas:', error)
-    })
-
+const loadData = async () => {
+    await fetchFields(endpointsSearch)
 }
 
 const expanded = ref<number[]>([])
@@ -284,6 +307,20 @@ function getRowProps({ item }) {
     }
 }
 
+const save = async () => {
+    try {
+        if (isEditing.value) {
+            await api.put(`/users/${formModel.value.id}`, formModel.value)
+        } else {
+            await api.post('/users/', formModel.value)
+        }
+        dialog.value = false
+        await usersSearch()
+    } catch (error) {
+        console.error('Erro ao salvar usuário:', error)
+    }
+}
+
 </script>
 
 <style>
@@ -306,7 +343,6 @@ function getRowProps({ item }) {
     color: white;
 }
 
-/* Adicionando estilo para a linha expandida */
 .v-data-table tbody tr[aria-expanded="true"] {
     background-color: white !important;
     color: black !important;

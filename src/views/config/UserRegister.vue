@@ -129,8 +129,11 @@
                     </v-row>
                     <v-row>
                         <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select label="Perfil" :items="profile" density="compact" v-model="formModel.role"
-                                item-title="name" item-value="name"></v-select>
+                            <v-select label="Perfil" :items="[
+                                { title: 'Administrador', value: 'admin' },
+                                { title: 'Supervisor', value: 'supervisor' },
+                                { title: 'Agente', value: 'agent' }
+                            ]" item-title="title" item-value="value" density="compact" v-model="formModel.role" />
                         </v-col>
                         <v-col cols="5" md="5" class="pa-1 ma-0">
                             <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
@@ -188,7 +191,7 @@
 
 <script setup lang="ts">
 import { number } from 'echarts'
-import { onMounted, ref, shallowRef, toRef } from 'vue'
+import { onMounted, ref, shallowRef, toRef, watch } from 'vue'
 // import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from '../../api/axios'
 
@@ -242,6 +245,14 @@ const headers = [
 ]
 const users = ref([])
 
+watch(
+    () => formModel.value.company,
+    (newCompanyId) => {
+        formModel.value.department = null
+        loadDepartments(newCompanyId)
+    }
+)
+
 const roleDisplayMap: Record<string, string> = {
     "admin": "Administrador",
     "supervisor": "Supervisor",
@@ -249,12 +260,16 @@ const roleDisplayMap: Record<string, string> = {
 }
 
 
-const loadDepartments = async () => {
+const loadDepartments = async (companyId: number | string) => {
+    if (!companyId) {
+        departments.value = []
+        return
+    }
     try {
-        const { data } = await api.get(`/departments/?company=${formModel.value.company}`)
+        const { data } = await api.get(`/departments/?company=${companyId}`)
         departments.value = data
     } catch (error) {
-        console.log(error.response.data)
+        console.log(error.response?.data)
     }
 }
 
@@ -338,7 +353,7 @@ const save = async () => {
         cellphone: formModel.value.cellphone,
         absence_message: formModel.value.absence_message,
         company: formModel.value.company,
-        profile: formModel.value.role,
+        role: formModel.value.role,
         departments: formModel.value.department ? [formModel.value.department] : []
     }
 

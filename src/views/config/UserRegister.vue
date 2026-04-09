@@ -79,6 +79,17 @@
                 </tr>
             </template>
 
+            <template v-slot:item.department="{ item }">
+                <span v-if="item.department && item.department.length">
+                    {{item.department.map(d => d.name).join(', ')}}
+                </span>
+                <span v-else>—</span>
+            </template>
+
+            <template v-slot:item.role="{ item }">
+                {{ roleDisplayMap[item.role] || item.role || '—' }}
+            </template>
+
             <template v-slot:item.actions="{ item }">
                 <v-btn :append-icon="expanded.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
                     :text="expanded.includes(item.id) ? 'Compactar' : 'Mais informações'" size="small" variant="text"
@@ -91,7 +102,7 @@
                 <template v-slot:text>
                     <v-row>
                         <v-col cols="12" md="6" sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.user" label="Nome" density="compact"></v-text-field>
+                            <v-text-field v-model="formModel.name" label="Nome" density="compact"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
                             <v-text-field v-model="formModel.email" label="E-mail" density="compact"></v-text-field>
@@ -103,8 +114,8 @@
                                 density="compact"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-select name="" id="" v-model="formModel.department" :items="departments"
-                                item-title="name" item-value="id" density="compact" label="Departamentos"></v-select>
+                            <v-select v-model="formModel.department" :items="departments" item-title="name"
+                                item-value="id" density="compact" label="Departamentos"></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -118,8 +129,8 @@
                     </v-row>
                     <v-row>
                         <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select label="Perfil" :items="perfis" density="compact"
-                                v-model="formModel.role"></v-select>
+                            <v-select label="Perfil" :items="profile" density="compact" v-model="formModel.role"
+                                item-title="name" item-value="name"></v-select>
                         </v-col>
                         <v-col cols="5" md="5" class="pa-1 ma-0">
                             <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
@@ -131,16 +142,16 @@
                     </v-row>
                     <v-row>
                         <v-col class="pa-0 ma-0">
-                            <v-text-field v-model="formModel.outOfMenssage" label="Mensagem de Ausência"
+                            <v-text-field v-model="formModel.absence_message" label="Mensagem de Ausência"
                                 density="compact"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
                         <v-col cols="12" class="pa-0 ma-0">
-                            <v-checkbox v-model="formModel.receiveTicket" color="primary"
+                            <v-checkbox v-model="formModel.no_auto_assign" color="primary"
                                 label="Não receber tickets via distribuição automática" hint-details></v-checkbox>
 
-                            <v-checkbox v-model="formModel.receiveDepartment" color="primary"
+                            <v-checkbox v-model="formModel.see_department_tickets" color="primary"
                                 label="Visualizar tickets de outros usuários dos seus departamentos"
                                 hint-details></v-checkbox>
                         </v-col>
@@ -178,7 +189,7 @@
 <script setup lang="ts">
 import { number } from 'echarts'
 import { onMounted, ref, shallowRef, toRef } from 'vue'
-import { useBackgroundColor } from 'vuetify/lib/composables/color'
+// import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from '../../api/axios'
 
 onMounted(() => {
@@ -190,19 +201,19 @@ const search = ref('')
 function createNewRecord() {
     return {
         id: null,
-        user: '',
+        name: '',
         email: '',
         cellphone: '',
-        department: '',
+        department: null,
         role: '',
         company: '',
         uLogin: '',
         uLogout: '',
         online: '',
         password: '',
-        outOfMenssage: '',
-        receiveTicket: false,
-        receiveDepartment: false
+        absence_message: '',
+        no_auto_assign: false,
+        see_department_tickets: false
     }
 }
 
@@ -216,18 +227,14 @@ const isEditing = toRef(() => !!formModel.value.id)
 const menu = ref(false)
 const companies = ref([])
 const departments = ref([])
+const profile = ref([])
 
 const headers = [
-    {
-        align: 'start',
-        key: 'user',
-        sortable: false,
-        title: 'Nome',
-    },
+    { align: 'start', key: 'username', sortable: false, title: 'Nome' },
     { key: 'email', title: 'E-mail' },
     { key: 'cellphone', title: 'Celular' },
-    { key: 'name', title: 'Departamento' },
-    { key: 'perfil', title: 'Perfil' },
+    { key: 'department', title: 'Departamento' },
+    { key: 'role', title: 'Perfil' },
     { key: 'uLogin', title: 'Último login' },
     { key: 'uLogout', title: 'Último logout' },
     { key: 'online', title: 'Online' },
@@ -235,21 +242,26 @@ const headers = [
 ]
 const users = ref([])
 
-const perfis = ['Administrador', 'Supervisor', 'Usuário']
+const roleDisplayMap: Record<string, string> = {
+    "admin": "Administrador",
+    "supervisor": "Supervisor",
+    "agent": "Agente"
+}
 
 
 const loadDepartments = async () => {
     try {
-        const { data } = await api.get('/departments/')
+        const { data } = await api.get(`/departments/?company=${formModel.value.company}`)
         departments.value = data
     } catch (error) {
-        console.error('Error fetching departments:', error)
+        console.log(error.response.data)
     }
 }
 
 const usersSearch = async () => {
     try {
         const { data } = await api.get('/users/')
+        console.log('USERS API:', data)
         users.value = data
     } catch (error) {
         console.error('Erro to search users:', error)
@@ -261,16 +273,18 @@ const saveCompany = async () => {
         await api.post('/companies/', companyForm.value)
         companyForm.value.name = ''
         companyDialog.value = false
-        await fetchFields([{ endpoint: '/companies/', field: companies }])
 
     } catch (error) {
         console.error('Erro to save company:', error)
+    } finally {
+        await fetchFields([{ endpoint: '/companies/', field: companies }])
     }
 }
 
 const endpointsSearch = [
     { endpoint: '/companies/', field: companies },
-    { endpoint: '/departments/', field: departments }
+    { endpoint: '/departments/', field: departments },
+    { endpoint: '/profiles/', field: profile }
 ]
 
 const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) => {
@@ -316,19 +330,32 @@ function getRowProps({ item }) {
 }
 
 const save = async () => {
-    console.log(formModel.value)
+
+    const payload = {
+        username: formModel.value.name,
+        email: formModel.value.email,
+        password: formModel.value.password,
+        cellphone: formModel.value.cellphone,
+        absence_message: formModel.value.absence_message,
+        company: formModel.value.company,
+        profile: formModel.value.role,
+        departments: formModel.value.department ? [formModel.value.department] : []
+    }
+
+    console.log(payload)
     try {
         if (isEditing.value) {
-            await api.put(`/users/${formModel.value.id}`, formModel.value)
+            await api.put(`/users/${formModel.value.id}`, payload)
         } else {
-            await api.post('/users/', formModel.value)
+            await api.post('/users/', payload)
         }
         dialog.value = false
     } catch (error) {
-        console.error('Erro to user register:', error)
+        console.log("API ERROR:", error.response.data)
     } finally {
         await usersSearch()
         await loadDepartments()
+        await loadData()
     }
 }
 

@@ -86,10 +86,6 @@
                 <span v-else>—</span>
             </template>
 
-            <template v-slot:item.role="{ item }">
-                {{ roleDisplayMap[item.role] || item.role || '—' }}
-            </template>
-
             <template v-slot:item.actions="{ item }">
                 <v-btn :append-icon="expanded.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
                     :text="expanded.includes(item.id) ? 'Compactar' : 'Mais informações'" size="small" variant="text"
@@ -237,7 +233,7 @@ const headers = [
     { key: 'email', title: 'E-mail' },
     { key: 'cellphone', title: 'Celular' },
     { key: 'department', title: 'Departamento' },
-    { key: 'role', title: 'Perfil' },
+    { key: 'role_display', title: 'Perfil' },
     { key: 'uLogin', title: 'Último login' },
     { key: 'uLogout', title: 'Último logout' },
     { key: 'online', title: 'Online' },

@@ -85,7 +85,7 @@
             {{ auth.user?.username?.toUpperCase() }}
           </div>
           <div class="text-caption truncate-line" style="color: #FAEBD7;">
-            {{ auth.user?.role?.toUpperCase() }}
+            {{ auth.user?.is_superadmin ? 'superadmin'.toUpperCase() : auth.user?.role?.toUpperCase() }}
           </div>
         </v-col>
       </v-row>

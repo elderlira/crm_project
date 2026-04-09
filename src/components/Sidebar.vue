@@ -26,7 +26,7 @@
       </v-row>
       <nav class="d-flex flex-column gap-2">
         <RouterLink to="/"
-          class="d-flex align-center  pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
+          class="d-flex align-center pa-3 rounded hover:bg-purple-700 transition text-decoration-none">
           <v-icon class="text-h5 mr-3" color="#EEE8AA">mdi-chart-bar</v-icon>
           <span v-if="isOpen" class="text-body-1">Dashboard</span>
         </RouterLink>
@@ -78,20 +78,19 @@
           <v-avatar color="#6495ED">
             <v-icon icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <!-- <span class="text-h4">👤</span> -->
         </v-col>
         <v-col v-if="isOpen && auth.user" class="pa-0 pl-3">
           <div class="text-body-1 font-weight-medium truncate-line">
-            {{ auth.user?.username?.toUpperCase() }}
+            {{ (auth.user?.name || auth.user?.username || 'Usuário').toUpperCase() }}
           </div>
           <div class="text-caption truncate-line" style="color: #FAEBD7;">
-            {{ auth.user?.role?.toUpperCase() }}
+            {{ (auth.user?.role_name || 'Sem Perfil').toUpperCase() }}
           </div>
         </v-col>
       </v-row>
 
       <v-col cols="auto" class="pa-0">
-        <v-btn v-if="isOpen" @click="logout" size="small" variant="text" color="#8B0000" icon="mdi-logout">
+        <v-btn v-if="isOpen" @click="handleLogout" size="small" variant="text" color="#8B0000" icon="mdi-logout">
         </v-btn>
       </v-col>
     </v-container>
@@ -100,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../services/authStore';
 
@@ -113,9 +112,15 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggle'])
 
-const logout = () => {
-  auth.logout()
-  router.push("/login")
+// FUNÇÃO DE LOGOUT CORRIGIDA: Agora espera o servidor salvar os dados
+const handleLogout = async () => {
+  try {
+    await auth.logout() // Chama a action assíncrona do Store
+  } catch (error) {
+    console.error("Erro durante o logout:", error)
+  } finally {
+    router.push("/login") // Garante o redirecionamento
+  }
 }
 </script>
 
@@ -126,5 +131,12 @@ const logout = () => {
   background-repeat: no-repeat;
   background-position: center;
   height: 120px;
+}
+
+.truncate-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px; /* Evita que o nome quebre o layout */
 }
 </style>

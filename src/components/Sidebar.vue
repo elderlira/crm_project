@@ -78,7 +78,6 @@
           <v-avatar color="#6495ED">
             <v-icon icon="mdi-account-circle"></v-icon>
           </v-avatar>
-          <!-- <span class="text-h4">👤</span> -->
         </v-col>
         <v-col v-if="isOpen && auth.user" class="pa-0 pl-3">
           <div class="text-body-1 font-weight-medium truncate-line">
@@ -113,8 +112,9 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggle'])
 
-const logout = () => {
-  auth.logout()
+
+const logout = async () => {
+  await auth.logout()
   router.push("/login")
 }
 </script>

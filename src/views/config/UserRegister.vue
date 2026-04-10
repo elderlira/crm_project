@@ -1,74 +1,53 @@
 <template>
     <div class="ml-4 mr-4 mb-4 mt-8">
-        <v-data-table :headers="headers" :items="users" :search="search" v-model:expanded="expanded" item-value="id"
-            :item-props="getRowProps">
+        <v-data-table 
+            :headers="headers" 
+            :items="users" 
+            :search="search" 
+            v-model:expanded="expanded" 
+            item-value="id"
+        >
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title class="mb-2">
                         <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
-
                         Usuários
                     </v-toolbar-title>
-                    <v-toolbar-title class="mr-10 mb-2">
-                        <template v-slot:text>
-                            <v-text-field v-model="search" label="Busque" prepend-inner-icon="mdi-magnify"
-                                variant="outlined" hide-details single-line></v-text-field>
-                        </template>
-                    </v-toolbar-title>
-
-                    <v-btn class="me-2 mb-2" prepend-icon="mdi-plus" rounded="lg" text="Adicionar" border
-                        @click="add"></v-btn>
+                    <v-text-field 
+                        v-model="search" 
+                        label="Pesquisar" 
+                        prepend-inner-icon="mdi-magnify"
+                        variant="outlined" 
+                        hide-details 
+                        single-line 
+                        density="compact" 
+                        class="mr-10"
+                    ></v-text-field>
+                    <v-btn class="me-2 mb-2" color="primary" prepend-icon="mdi-plus" rounded="lg" text="Adicionar" border @click="add"></v-btn>
                 </v-toolbar>
             </template>
 
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length" class="py-2">
-                        <v-sheet rounded="lg" border>
+                        <v-sheet rounded="lg" border shadow="sm">
                             <v-table density="compact">
                                 <tbody>
                                     <tr>
-                                        <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" color="primary" class="mr-1"></v-icon>
-                                                Grupos do Usuário
-                                            </v-btn>
-                                        </th>
-                                        <th> <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
-                                                Permissões do usuário
-                                            </v-btn>
-                                        </th>
-                                        <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
-                                                Gestão de canais do usuário
-                                            </v-btn>
-                                        </th>
+                                        <th><v-btn text variant="plain" size="small"><v-icon icon="mdi-account-group" color="primary" class="mr-1"/>Grupos</v-btn></th>
+                                        <th><v-btn text variant="plain" size="small"><v-icon icon="mdi-shield-lock" class="mr-1"/>Permissões</v-btn></th>
+                                        <th><v-btn text variant="plain" size="small"><v-icon icon="mdi-vector-link" class="mr-1"/>Canais</v-btn></th>
                                     </tr>
                                     <tr>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
-                                                Alterar senha
+                                            <v-btn text variant="plain" size="small" @click="preparePasswordChange(item)">
+                                                <v-icon icon="mdi-key" class="mr-1"/>Alterar Senha
                                             </v-btn>
                                         </th>
+                                        <th><v-btn text variant="plain" size="small" @click="editItem(item)"><v-icon icon="mdi-pencil" class="mr-1" color="orange"/>Editar</v-btn></th>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
-                                                Editar
-                                            </v-btn>
-                                        </th>
-                                        <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
-                                                <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
-                                                Deletar
+                                            <v-btn text variant="plain" color="error" size="small" @click="prepareDelete(item)">
+                                                <v-icon icon="mdi-delete" class="mr-1"/>Deletar
                                             </v-btn>
                                         </th>
                                     </tr>
@@ -79,106 +58,156 @@
                 </tr>
             </template>
 
+            <template v-slot:item.company="{ item }">
+                <span class="text-subtitle-2 font-weight-bold">{{ item.company_info?.name || '—' }}</span>
+            </template>
+
             <template v-slot:item.department="{ item }">
-                <span v-if="item.department && item.department.length">
-                    {{item.department.map(d => d.name).join(', ')}}
+                <div v-if="item.department?.length">
+                    <v-chip v-for="d in item.department" :key="d.id" size="x-small" color="primary" variant="tonal" class="mr-1">
+                        {{ d.name }}
+                    </v-chip>
+                </div>
+                <span v-else class="text-caption text-grey">—</span>
+            </template>
+
+            <template v-slot:item.last_login="{ item }">
+                <span class="text-caption">{{ item.last_login ? new Date(item.last_login).toLocaleString('pt-BR') : '-' }}</span>
+            </template>
+
+            <template v-slot:item.last_logout="{ item }">
+                <span class="text-caption">
+                    <v-chip v-if="item.is_online" size="x-small" color="success" variant="text">Conectado agora</v-chip>
+                    <span v-else>{{ item.last_logout ? new Date(item.last_logout).toLocaleString('pt-BR') : '-' }}</span>
                 </span>
-                <span v-else>—</span>
+            </template>
+
+            <template v-slot:item.is_online="{ item }">
+                <v-chip :color="item.is_online ? 'success' : 'error'" size="x-small" label>
+                    {{ item.is_online ? 'Online' : 'Offline' }}
+                </v-chip>
             </template>
 
             <template v-slot:item.actions="{ item }">
-                <v-btn :append-icon="expanded.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-                    :text="expanded.includes(item.id) ? 'Compactar' : 'Mais informações'" size="small" variant="text"
-                    @click="toggleRow(item)" />
+                <v-btn 
+                    :append-icon="expanded.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                    :text="expanded.includes(item.id) ? 'Compactar' : 'Mais informações'" 
+                    size="small" 
+                    variant="text"
+                    @click="toggleRow(item)" 
+                />
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" max-width="500" persistent>
-            <v-card :title="`${isEditing ? 'Editar' : 'Adicionar'} Usuário`">
-                <template v-slot:text>
-                    <v-row>
-                        <v-col cols="12" md="6" sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.name" label="Nome" density="compact"></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.email" label="E-mail" density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.cellphone" label="Contato (DDD + Número)"
-                                density="compact"></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-select v-model="formModel.department" :items="departments" item-title="name"
-                                item-value="id" density="compact" label="Departamentos"></v-select>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" md="12" class="pa-0 ma-0">
-                            <v-text-field v-model="formModel.password" label="Senha"
-                                :type="showPassword ? 'text' : 'password'"
-                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append-inner="showPassword = !showPassword" hint="Pelo menos 8 caracteres"
-                                density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select label="Perfil" :items="[
-                                { title: 'Administrador', value: 'admin' },
-                                { title: 'Supervisor', value: 'supervisor' },
-                                { title: 'Agente', value: 'agent' }
-                            ]" item-title="title" item-value="value" density="compact" v-model="formModel.role" />
-                        </v-col>
-                        <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
-                                item-value="id" density="compact"></v-select>
-                        </v-col>
-                        <v-col cols=2 md=2>
-                            <v-btn icon="mdi-plus" variant="outlined" @click="companyDialog = true" density="compact" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col class="pa-0 ma-0">
-                            <v-text-field v-model="formModel.absence_message" label="Mensagem de Ausência"
-                                density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" class="pa-0 ma-0">
-                            <v-checkbox v-model="formModel.no_auto_assign" color="primary"
-                                label="Não receber tickets via distribuição automática" hint-details></v-checkbox>
+        <v-dialog v-model="passwordDialog" max-width="400">
+    <v-card title="Alterar Senha">
+        <v-card-text>
+            <p class="text-caption mb-4">Alterando senha para: <b>{{ userToPassword?.username }}</b></p>
+            <v-text-field 
+                v-model="newPassword" 
+                label="Nova Senha" 
+                :type="showPass ? 'text' : 'password'"
+                :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append-inner="showPass = !showPass"
+                variant="outlined" 
+                density="compact"
+            ></v-text-field>
+        </v-card-text>
 
-                            <v-checkbox v-model="formModel.see_department_tickets" color="primary"
-                                label="Visualizar tickets de outros usuários dos seus departamentos"
-                                hint-details></v-checkbox>
+        <v-card-actions>
+            <v-btn text="Cancelar" @click="passwordDialog = false"></v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="elevated" :loading="loadingPass" @click="confirmPasswordChange">Atualizar</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
+        <v-dialog v-model="dialog" max-width="750" persistent v-if="formModel">
+            <v-card :title="`${formModel.id ? 'Editar' : 'Adicionar'} Usuário`">
+                <v-card-text>
+                    <v-row dense>
+                        <v-col cols="12" md="6" class="pa-1"><v-text-field v-model="formModel.username" label="Nome/Username" density="compact" variant="outlined" hide-details/></v-col>
+                        <v-col cols="12" md="6" class="pa-1"><v-text-field v-model="formModel.email" label="E-mail" density="compact" variant="outlined" hide-details/></v-col>
+                    </v-row>
+
+                    <v-row dense align="center" class="mt-2">
+                        <v-col cols="12" md="6" class="pa-1">
+                            <v-text-field v-model="formModel.cellphone" label="Contato" density="compact" variant="outlined" maxlength="11" hide-details/>
+                        </v-col>
+                        <v-col cols="12" md="6" class="pa-1 d-flex align-center">
+                            <v-select v-model="formModel.department_id" :items="departments" item-title="name" item-value="id" density="compact" label="Departamento" variant="outlined" hide-details class="mr-2"></v-select>
+                            <v-btn icon="mdi-plus" variant="outlined" color="primary"  @click="deptDialog = true"></v-btn>
                         </v-col>
                     </v-row>
 
-                </template>
+                    <v-row dense v-if="!formModel.id" class="mt-2">
+                        <v-col cols="12" class="pa-1">
+                            <v-text-field v-model="formModel.password" label="Senha" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="showPassword = !showPassword" density="compact" variant="outlined" hide-details/>
+                        </v-col>
+                    </v-row>
 
-                <v-divider></v-divider>
+                    <v-row dense align="center" class="mt-2">
+                        <v-col cols="5" md="5" class="pa-1">
+                            <v-select label="Perfil" :items="perfis" item-title="title" item-value="value" density="compact" v-model="formModel.role" variant="outlined" hide-details/>
+                        </v-col>
+                        <v-col cols="5" md="5" class="pa-1">
+                            <v-select v-model="formModel.company_id" label="Empresa" :items="companies" item-title="name" item-value="id" density="compact" variant="outlined" hide-details></v-select>
+                        </v-col>
+                        <v-col cols="2" md="2" class="d-flex align-center">
+                            <v-btn icon="mdi-plus" variant="outlined" color="primary" @click="companyDialog = true"  />
+                        </v-col>
+                    </v-row>
 
-                <v-card-actions class="bg-surface-light">
+                    <v-row dense class="mt-2">
+                        <v-col class="pa-1"><v-text-field v-model="formModel.absence_message" label="Mensagem de Ausência" density="compact" variant="outlined" hide-details/></v-col>
+                    </v-row>
+                    
+                    <v-checkbox v-model="formModel.no_auto_assign" color="primary" label="Não receber tickets automáticos" hide-details density="compact" class="mt-2"></v-checkbox>
+                    <v-checkbox v-model="formModel.see_department_tickets" color="primary" label="Visualizar tickets de outros" hide-details density="compact" class="mt-2"></v-checkbox>
+                </v-card-text>
+                <v-card-actions>
                     <v-btn text="Cancelar" variant="plain" @click="dialog = false"></v-btn>
-
                     <v-spacer></v-spacer>
-
-                    <v-btn text="Salvar" @click="save"></v-btn>
+                    <v-btn color="primary" variant="elevated" @click="save">Salvar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="companyDialog" max-width="400" persistent>
-            <v-card title="Adicionar Empresa">
+        <v-dialog v-model="deleteDialog" max-width="450">
+            <v-card title="Confirmar Exclusão">
                 <v-card-text>
-                    <v-text-field v-model="companyForm.name" label="Nome da empresa" />
+                    Tem certeza que deseja deletar o usuário <strong>{{ userToDeletar?.username }}</strong>? Esta ação é irreversível.
                 </v-card-text>
                 <v-card-actions>
-                    <v-spacer />
-                    <v-btn text="Cancelar" @click="companyDialog = false" />
-                    <v-btn text="Salvar" @click="saveCompany" />
+                    <v-btn text="Cancelar" @click="deleteDialog = false"></v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn color="error" variant="elevated" :loading="loadingDelete" @click="confirmDelete">Sim, Deletar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="companyDialog" max-width="400">
+            <v-card title="Nova Empresa">
+                <v-card-text>
+                    <v-text-field v-model="newCompanyName" label="Nome da Empresa" variant="outlined" density="compact" hide-details @keyup.enter="saveNewCompany"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text="Cancelar" @click="companyDialog = false"></v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" variant="elevated" :loading="loadingCompany" @click="saveNewCompany">Criar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="deptDialog" max-width="400">
+            <v-card title="Novo Departamento">
+                <v-card-text>
+                    <v-text-field v-model="newDeptName" label="Nome do Departamento" variant="outlined" density="compact" hide-details @keyup.enter="saveNewDept"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text="Cancelar" @click="deptDialog = false"></v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" variant="elevated" :loading="loadingDept" @click="saveNewDept">Criar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -186,210 +215,143 @@
 </template>
 
 <script setup lang="ts">
-import { number } from 'echarts'
-import { onMounted, ref, shallowRef, toRef, watch } from 'vue'
-// import { useBackgroundColor } from 'vuetify/lib/composables/color'
+import { ref, onMounted, watch } from 'vue'
 import api from '../../api/axios'
 
-onMounted(() => {
-    loadData()
-    usersSearch()
-})
-
 const search = ref('')
-function createNewRecord() {
-    return {
-        id: null,
-        name: '',
-        email: '',
-        cellphone: '',
-        department: null,
-        role: '',
-        company: '',
-        uLogin: '',
-        uLogout: '',
-        online: '',
-        password: '',
-        absence_message: '',
-        no_auto_assign: false,
-        see_department_tickets: false
-    }
-}
-
-const companyForm = ref({ name: '' })
-const showPassword = ref(false)
-const books = ref([])
-const formModel = ref(createNewRecord())
-const dialog = shallowRef(false)
-const companyDialog = shallowRef(false)
-const isEditing = toRef(() => !!formModel.value.id)
-const menu = ref(false)
+const users = ref([])
 const companies = ref([])
 const departments = ref([])
-const profile = ref([])
+const expanded = ref([])
+const dialog = ref(false)
+const showPassword = ref(false)
+
+const companyDialog = ref(false)
+const deptDialog = ref(false)
+const newCompanyName = ref('')
+const newDeptName = ref('')
+const loadingCompany = ref(false)
+const loadingDept = ref(false)
+
+const deleteDialog = ref(false)
+const userToDeletar = ref(null)
+const loadingDelete = ref(false)
+
+const passwordDialog = ref(false)
+const userToPassword = ref(null)
+const newPassword = ref('')
+const loadingPass = ref(false)
+const showPass = ref(false)
+
+const perfis = [
+    { title: 'Administrador', value: 'admin' },
+    { title: 'Supervisor', value: 'supervisor' },
+    { title: 'Agente', value: 'agent' }
+]
 
 const headers = [
-    { align: 'start', key: 'username', sortable: false, title: 'Nome' },
-    { key: 'email', title: 'E-mail' },
-    { key: 'cellphone', title: 'Celular' },
-    { key: 'department', title: 'Departamento' },
-    { key: 'role_display', title: 'Perfil' },
-    { key: 'uLogin', title: 'Último login' },
-    { key: 'uLogout', title: 'Último logout' },
-    { key: 'online', title: 'Online' },
-    { key: 'actions', title: 'Ações' },
-]
-const users = ref([])
-
-watch(
-    () => formModel.value.company,
-    (newCompanyId) => {
-        formModel.value.department = null
-        loadDepartments(newCompanyId)
-    }
-)
-
-const roleDisplayMap: Record<string, string> = {
-    "admin": "Administrador",
-    "supervisor": "Supervisor",
-    "agent": "Agente"
-}
-
-
-const loadDepartments = async (companyId: number | string) => {
-    if (!companyId) {
-        departments.value = []
-        return
-    }
-    try {
-        const { data } = await api.get(`/departments/?company=${companyId}`)
-        departments.value = data
-    } catch (error) {
-        console.log(error.response?.data)
-    }
-}
-
-const usersSearch = async () => {
-    try {
-        const { data } = await api.get('/users/')
-        console.log('USERS API:', data)
-        users.value = data
-    } catch (error) {
-        console.error('Erro to search users:', error)
-    }
-}
-
-const saveCompany = async () => {
-    try {
-        await api.post('/companies/', companyForm.value)
-        companyForm.value.name = ''
-        companyDialog.value = false
-
-    } catch (error) {
-        console.error('Erro to save company:', error)
-    } finally {
-        await fetchFields([{ endpoint: '/companies/', field: companies }])
-    }
-}
-
-const endpointsSearch = [
-    { endpoint: '/companies/', field: companies },
-    { endpoint: '/departments/', field: departments },
-    { endpoint: '/profiles/', field: profile }
+    { title: 'Nome', key: 'username', align: 'start' },
+    { title: 'Empresa', key: 'company' },       
+    { title: 'Depto', key: 'department' },      
+    { title: 'Perfil', key: 'role_display' },   
+    { title: 'Login', key: 'last_login' },  
+    { title: 'Logout', key: 'last_logout' },
+    { title: 'Online', key: 'is_online', align: 'center' }, 
+    { title: 'Ações', key: 'actions', sortable: false },
 ]
 
-const fetchFields = async (searches: Array<{ endpoint: string; field: any }>) => {
-    await Promise.all(
-        searches.map(async ({ endpoint, field }) => {
-            try {
-                const { data } = await api.get(endpoint)
-                field.value = data
-            } catch (error) {
-                console.error(`Erro to search endpoint: ${endpoint}:`, error)
-            }
-        })
-    )
+function createNewRecord() {
+    return { id: null, username: '', email: '', cellphone: '', role: 'agent', company_id: null, department_id: null, password: '', absence_message: '', no_auto_assign: false, see_department_tickets: true }
 }
+const formModel = ref(createNewRecord())
 
 const loadData = async () => {
-    await fetchFields(endpointsSearch)
+    try {
+        const [u, c] = await Promise.all([api.get('/auth/users/'), api.get('/companies/')])
+        users.value = u.data
+        companies.value = c.data
+    } catch (e) { console.error("Erro 500 ou conexão:", e) }
 }
 
-const expanded = ref<number[]>([])
+const loadDepartments = async (companyId: number) => {
+    try { 
+        const { data } = await api.get(`/departments/?company=${companyId}`)
+        departments.value = data 
+    } catch (e) {}
+}
 
-function toggleRow(item) {
-    const index = expanded.value.indexOf(item.id)
+watch(() => formModel.value.company_id, (newVal) => {
+    if (newVal) loadDepartments(newVal)
+    else departments.value = []
+})
 
-    if (index > -1) {
-        expanded.value.splice(index, 1)
-    } else {
-        expanded.value.push(item.id)
+
+const add = () => { formModel.value = createNewRecord(); dialog.value = true }
+
+const editItem = (item) => { 
+    formModel.value = { 
+        ...item, 
+        company_id: item.company_info?.id || item.company || null,
+        department_id: item.department?.[0]?.id || null,
+        password: '' 
     }
-}
-
-function add() {
-    formModel.value = createNewRecord()
-    dialog.value = true
-}
-
-function getRowProps({ item }) {
-    const id = item.raw.id
-
-    return {
-        class: id % 2 === 0 && 'v-data-table' ? 'row-red' : 'row-blue'
-    }
+    dialog.value = true 
 }
 
 const save = async () => {
-
     const payload = {
-        username: formModel.value.name,
+        username: formModel.value.username,
         email: formModel.value.email,
-        password: formModel.value.password,
         cellphone: formModel.value.cellphone,
-        absence_message: formModel.value.absence_message,
-        company: formModel.value.company,
         role: formModel.value.role,
-        departments: formModel.value.department ? [formModel.value.department] : []
+        company: formModel.value.company_id,
+        absence_message: formModel.value.absence_message,
+        no_auto_assign: formModel.value.no_auto_assign,
+        see_department_tickets: formModel.value.see_department_tickets,
+        departments: formModel.value.department_id ? [formModel.value.department_id] : []
     }
+    if (!formModel.value.id) payload['password'] = formModel.value.password
 
-    console.log(payload)
     try {
-        if (isEditing.value) {
-            await api.put(`/users/${formModel.value.id}`, payload)
-        } else {
-            await api.post('/users/', payload)
-        }
+        if (formModel.value.id) await api.put(`/auth/users/${formModel.value.id}/`, payload)
+        else await api.post('/auth/users/', payload)
         dialog.value = false
-    } catch (error) {
-        console.log("API ERROR:", error.response.data)
-    } finally {
-        await usersSearch()
-        await loadDepartments()
-        await loadData()
-    }
+        loadData()
+    } catch (e: any) { alert("Erro ao salvar: " + JSON.stringify(e.response?.data)) }
 }
 
+function preparePasswordChange(item) {
+    userToPassword.value = item
+    newPassword.value = ''
+    passwordDialog.value = true
+}
+
+async function confirmPasswordChange() {
+    if (!newPassword.value) return
+    loadingPass.value = true
+    try {
+        await api.patch(`/auth/users/${userToPassword.value.id}/`, { password: newPassword.value })
+        passwordDialog.value = false
+        alert("Senha atualizada!")
+    } catch (e) { alert("Erro ao mudar senha") }
+    finally { loadingPass.value = false }
+}
+
+function prepareDelete(item) { userToDeletar.value = item; deleteDialog.value = true }
+async function confirmDelete() {
+    loadingDelete.value = true
+    try {
+        await api.delete(`/auth/users/${userToDeletar.value.id}/`)
+        deleteDialog.value = false
+        loadData()
+    } catch (e) { alert("Erro ao deletar") }
+    finally { loadingDelete.value = false }
+}
+
+const toggleRow = (item) => {
+    const index = expanded.value.indexOf(item.id)
+    index > -1 ? expanded.value.splice(index, 1) : expanded.value.push(item.id)
+}
+
+onMounted(loadData)
 </script>
-
-<style>
-.v-data-table {
-    background-color: #32CD32;
-    color: white;
-}
-
-.v-data-table tbody tr:nth-child(even) {
-    background-color: #006400;
-    color: white;
-}
-
-.v-data-table tbody tr[aria-expanded="true"] {
-    background-color: white !important;
-    color: black !important;
-}
-
-th {
-    background-color: white !important;
-    color: black
-}
-</style>

@@ -1,12 +1,10 @@
 <template>
     <div class="ml-4 mr-4 mb-4 mt-8">
-        <v-data-table :headers="headers" :items="users" :search="search" v-model:expanded="expanded" item-value="id"
-            :item-props="getRowProps">
+        <v-data-table :headers="headers" :items="users" :search="search" v-model:expanded="expanded" item-value="id">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title class="mb-2">
                         <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
-
                         Usuários
                     </v-toolbar-title>
                     <v-toolbar-title class="mr-10 mb-2">
@@ -94,80 +92,97 @@
         </v-data-table>
 
         <v-dialog v-model="dialog" max-width="500" persistent>
-            <v-card :title="`${isEditing ? 'Editar' : 'Adicionar'} Usuário`">
-                <template v-slot:text>
-                    <v-row>
-                        <v-col cols="12" md="6" sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.name" label="Nome" density="compact"></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.email" label="E-mail" density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-text-field v-model="formModel.cellphone" label="Contato (DDD + Número)"
-                                density="compact"></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" , sm="12" class="pa-1 ma-0">
-                            <v-select v-model="formModel.department" :items="departments" item-title="name"
-                                item-value="id" density="compact" label="Departamentos"></v-select>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" md="12" class="pa-0 ma-0">
-                            <v-text-field v-model="formModel.password" label="Senha"
-                                :type="showPassword ? 'text' : 'password'"
-                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append-inner="showPassword = !showPassword" hint="Pelo menos 8 caracteres"
-                                density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select label="Perfil" :items="[
-                                { title: 'Administrador', value: 'admin' },
-                                { title: 'Supervisor', value: 'supervisor' },
-                                { title: 'Agente', value: 'agent' }
-                            ]" item-title="title" item-value="value" density="compact" v-model="formModel.role" />
-                        </v-col>
-                        <v-col cols="5" md="5" class="pa-1 ma-0">
-                            <v-select v-model="formModel.company" label="Empresa" :items="companies" item-title="name"
-                                item-value="id" density="compact"></v-select>
-                        </v-col>
-                        <v-col cols=2 md=2>
-                            <v-btn icon="mdi-plus" variant="outlined" @click="companyDialog = true" density="compact" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col class="pa-0 ma-0">
-                            <v-text-field v-model="formModel.absence_message" label="Mensagem de Ausência"
-                                density="compact"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12" class="pa-0 ma-0">
-                            <v-checkbox v-model="formModel.no_auto_assign" color="primary"
-                                label="Não receber tickets via distribuição automática" hint-details></v-checkbox>
+            <v-form v-model="valid" ref="form" lazy-validation>
+                <v-card :title="`${isEditing ? 'Editar' : 'Adicionar'} Usuário`">
+                    <template v-slot:text>
+                        <v-row>
+                            <v-col cols="12" md="12" sm="12" class="pa-1 ma-0">
+                                <v-text-field v-model="formModel.name" label="Nome" density="compact"
+                                    hint="Campo obrigatório"
+                                    :rules="[validationRules.min(3), validationRules.required('Campo nome obrigatório')]"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="12" , sm="12" class="pa-1 ma-0">
+                                <v-text-field v-model="formModel.email" label="E-mail" density="compact"
+                                    hint="Campo obrigatório"
+                                    :rules="[validationRules.email, validationRules.required('Campo e-mail obrigatório')]"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="12" , sm="12" class="pa-1 ma-0">
+                                <v-text-field v-model="cellphone" label="Contato (DDD + Número)" density="compact"
+                                    hint="Campo obrigatório"
+                                    :rules="[validationRules.phoneNumber, validationRules.max(11), validationRules.required('Campo telefone obrigatório')]"
+                                    maxlength="11"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="6" class="pa-1 ma-0">
+                                <v-text-field v-model="formModel.password" label="Senha"
+                                    :type="showPassword ? 'text' : 'password'"
+                                    :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                    @click:append-inner="showPassword = !showPassword" hint="Pelo menos 8 caracteres"
+                                    density="compact"
+                                    :rules="[validationRules.min(8), validationRules.required('Campo senha obrigatório')]"></v-text-field>
+                            </v-col>
+                            <v-col cols="6" md="6" class="pa-1 ma-0">
+                                <v-select label="Perfil" :items="[
+                                    { title: 'Administrador', value: 'admin' },
+                                    { title: 'Supervisor', value: 'supervisor' },
+                                    { title: 'Agente', value: 'agent' }
+                                ]" item-title="title" item-value="value" density="compact" v-model="formModel.role"
+                                    :rules="[validationRules.required('Perfil Obrigatório')]" />
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="10" , sm="10" class="pa-1 ma-0">
+                                <v-select v-model="formModel.company" label="Empresa" :items="companies"
+                                    item-title="name" item-value="id" density="compact"
+                                    :rules="[validationRules.required('Precisa selecionar uma Empresa')]"></v-select>
+                            </v-col>
+                            <v-col cols=2 md=2>
+                                <v-btn icon="mdi-plus" variant="outlined" @click="companyDialog = true"
+                                    density="compact" />
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="12" class="pa-1 ma-0">
+                                <v-select v-model="formModel.department" :items="departments" item-title="name"
+                                    item-value="id" density="compact" label="Departamentos"></v-select>
+                            </v-col>
 
-                            <v-checkbox v-model="formModel.see_department_tickets" color="primary"
-                                label="Visualizar tickets de outros usuários dos seus departamentos"
-                                hint-details></v-checkbox>
-                        </v-col>
-                    </v-row>
+                        </v-row>
+                        <v-row>
+                            <v-col class="pa-0 ma-0">
+                                <v-text-field v-model="formModel.absence_message" label="Mensagem de Ausência"
+                                    density="compact"></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" class="pa-0 ma-0">
+                                <v-checkbox v-model="formModel.no_auto_assign" color="primary"
+                                    label="Não receber tickets via distribuição automática" hint-details></v-checkbox>
 
-                </template>
+                                <v-checkbox v-model="formModel.see_department_tickets" color="primary"
+                                    label="Visualizar tickets de outros usuários dos seus departamentos"
+                                    hint-details></v-checkbox>
+                            </v-col>
+                        </v-row>
 
-                <v-divider></v-divider>
+                    </template>
 
-                <v-card-actions class="bg-surface-light">
-                    <v-btn text="Cancelar" variant="plain" @click="dialog = false"></v-btn>
+                    <v-divider></v-divider>
 
-                    <v-spacer></v-spacer>
+                    <v-card-actions class="bg-surface-light">
+                        <v-btn text="Cancelar" variant="plain" @click="dialog = false"></v-btn>
 
-                    <v-btn text="Salvar" @click="save"></v-btn>
-                </v-card-actions>
-            </v-card>
+                        <v-spacer></v-spacer>
+
+                        <v-btn text="Salvar" @click="save" :disabled="!valid"></v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
         </v-dialog>
 
         <v-dialog v-model="companyDialog" max-width="400" persistent>
@@ -187,14 +202,25 @@
 
 <script setup lang="ts">
 import { number } from 'echarts'
-import { onMounted, ref, shallowRef, toRef, watch } from 'vue'
+import { onMounted, ref, shallowRef, toRef, watch, computed } from 'vue'
 // import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from '../../api/axios'
+import { validationRules } from '../../rules/validationRules'
 
 onMounted(() => {
     loadData()
     usersSearch()
 })
+
+const cellphone = computed({
+    get: () => formModel.value.cellphone,
+    set: (value) => {
+        const numericValue = value.replace(/\D/g, '')
+        formModel.value.cellphone = numericValue
+    }
+})
+
+const valid = ref(false)
 
 const search = ref('')
 function createNewRecord() {
@@ -332,15 +358,20 @@ function add() {
     dialog.value = true
 }
 
-function getRowProps({ item }) {
-    const id = item.raw.id
+// function getRowProps({ item }) {
+//     const id = item.raw.id
 
-    return {
-        class: id % 2 === 0 && 'v-data-table' ? 'row-red' : 'row-blue'
-    }
-}
+//     return {
+//         class: id % 2 === 0 && 'v-data-table' ? 'row-red' : 'row-blue'
+//     }
+// }
 
 const save = async () => {
+
+    if (!valid.value) {
+        console.log('Formulário inválido')
+        return
+    }
 
     const payload = {
         username: formModel.value.name,

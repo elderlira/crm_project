@@ -19,6 +19,13 @@
                 </v-toolbar>
             </template>
 
+            <template v-slot:item.online="{ item }">
+                <v-icon :color="item.online ? 'success' : 'error'">
+                    {{ item.online ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+                </v-icon>
+            </template>
+
+
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length" class="py-2">
@@ -27,21 +34,18 @@
                                 <tbody>
                                     <tr>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                            <v-btn text="Grupos do Usuário" variant="plain">
                                                 <v-icon icon="mdi-account-group" color="primary" class="mr-1"></v-icon>
                                                 Grupos do Usuário
                                             </v-btn>
                                         </th>
-                                        <th> <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                        <th> <v-btn text="Grupos do Usuário" variant="plain">
                                                 <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
                                                 Permissões do usuário
                                             </v-btn>
                                         </th>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                            <v-btn text="Grupos do Usuário" variant="plain">
                                                 <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
                                                 Gestão de canais do usuário
                                             </v-btn>
@@ -49,22 +53,19 @@
                                     </tr>
                                     <tr>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                            <v-btn text="Grupos do Usuário" variant="plain">
                                                 <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
                                                 Alterar senha
                                             </v-btn>
                                         </th>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                            <v-btn text="Grupos do Usuário" variant="plain" @click="editUser(item)">
                                                 <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
                                                 Editar
                                             </v-btn>
                                         </th>
                                         <th>
-                                            <v-btn text="Grupos do Usuário" variant="plain"
-                                                @click="() => console.log('clicado em grupos do usuario')">
+                                            <v-btn text="Grupos do Usuário" variant="plain" @click="deleteUser(item)">
                                                 <v-icon icon="mdi-account-group" class="mr-1"></v-icon>
                                                 Deletar
                                             </v-btn>
@@ -103,14 +104,14 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="12" md="12" , sm="12" class="pa-1 ma-0">
+                            <v-col cols="12" md="12" sm="12" class="pa-1 ma-0">
                                 <v-text-field v-model="formModel.email" label="E-mail" density="compact"
                                     hint="Campo obrigatório"
                                     :rules="[validationRules.email, validationRules.required('Campo e-mail obrigatório')]"></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="12" md="12" , sm="12" class="pa-1 ma-0">
+                            <v-col cols="12" md="12" sm="12" class="pa-1 ma-0">
                                 <v-text-field v-model="cellphone" label="Contato (DDD + Número)" density="compact"
                                     hint="Campo obrigatório"
                                     :rules="[validationRules.phoneNumber, validationRules.max(11), validationRules.required('Campo telefone obrigatório')]"
@@ -119,12 +120,12 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12" md="6" class="pa-1 ma-0">
-                                <v-text-field v-model="formModel.password" label="Senha"
+                                <v-text-field :disabled="isEditing" v-model="formModel.password" label="Senha"
                                     :type="showPassword ? 'text' : 'password'"
                                     :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                     @click:append-inner="showPassword = !showPassword" hint="Pelo menos 8 caracteres"
                                     density="compact"
-                                    :rules="[validationRules.min(8), validationRules.required('Campo senha obrigatório')]"></v-text-field>
+                                    :rules="isEditing ? [] : [validationRules.min(8), validationRules.required('Campo senha obrigatório')]" />
                             </v-col>
                             <v-col cols="6" md="6" class="pa-1 ma-0">
                                 <v-select label="Perfil" :items="[
@@ -136,7 +137,7 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="12" md="10" , sm="10" class="pa-1 ma-0">
+                            <v-col cols="12" md="10" sm="10" class="pa-1 ma-0">
                                 <v-select v-model="formModel.company" label="Empresa" :items="companies"
                                     item-title="name" item-value="id" density="compact"
                                     :rules="[validationRules.required('Precisa selecionar uma Empresa')]"></v-select>
@@ -185,6 +186,23 @@
             </v-form>
         </v-dialog>
 
+        <v-dialog v-model="dialogDelete" max-width="400" persistent>
+            <v-card title="Confirmar exclusão">
+                <v-card-text>
+                    Tem certeza que deseja deletar o usuário
+                    <div style="font-weight: bold; color: red; margin-top: 8px;">
+                        {{ userToDelete?.username?.toUpperCase() || '' }}
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn text="Cancelar" @click="dialogDelete = false" />
+                    <v-btn text="Deletar" color="red" @click="confirmDelete" />
+                </v-card-actions>
+            </v-card>
+
+        </v-dialog>
+
         <v-dialog v-model="companyDialog" max-width="400" persistent>
             <v-card title="Adicionar Empresa">
                 <v-card-text>
@@ -206,6 +224,7 @@ import { onMounted, ref, shallowRef, toRef, watch, computed } from 'vue'
 // import { useBackgroundColor } from 'vuetify/lib/composables/color'
 import api from '../../api/axios'
 import { validationRules } from '../../rules/validationRules'
+import { useItems } from 'vuetify/lib/composables/list-items'
 
 onMounted(() => {
     loadData()
@@ -231,7 +250,7 @@ function createNewRecord() {
         cellphone: '',
         department: null,
         role: '',
-        company: '',
+        company: null,
         uLogin: '',
         uLogout: '',
         online: '',
@@ -247,8 +266,9 @@ const showPassword = ref(false)
 const books = ref([])
 const formModel = ref(createNewRecord())
 const dialog = shallowRef(false)
+const dialogDelete = shallowRef(false)
 const companyDialog = shallowRef(false)
-const isEditing = toRef(() => !!formModel.value.id)
+const isEditing = computed(() => !!formModel.value.id)
 const menu = ref(false)
 const companies = ref([])
 const departments = ref([])
@@ -270,7 +290,9 @@ const users = ref([])
 watch(
     () => formModel.value.company,
     (newCompanyId) => {
-        formModel.value.department = null
+        if (!isEditing.value) {
+            formModel.value.department = null
+        }
         loadDepartments(newCompanyId)
     }
 )
@@ -373,44 +395,93 @@ const save = async () => {
         return
     }
 
-    const payload = {
+    const payload: any = {
         username: formModel.value.name,
         email: formModel.value.email,
-        password: formModel.value.password,
         cellphone: formModel.value.cellphone,
         absence_message: formModel.value.absence_message,
         company: formModel.value.company,
         role: formModel.value.role,
-        departments: formModel.value.department ? [formModel.value.department] : []
+        departments: formModel.value.department
+            ? [formModel.value.department]
+            : []
+    }
+
+    if (!isEditing.value || formModel.value.password) {
+        payload.password = formModel.value.password
     }
 
     console.log(payload)
+
     try {
         if (isEditing.value) {
-            await api.put(`/users/${formModel.value.id}`, payload)
+            await api.put(`/users/${formModel.value.id}/`, payload)
         } else {
             await api.post('/users/', payload)
         }
+
         dialog.value = false
-    } catch (error) {
-        console.log("API ERROR:", error.response.data)
+
+    } catch (error: any) {
+        console.log("API ERROR:", error.response?.data)
     } finally {
         await usersSearch()
-        await loadDepartments()
+        // await loadDepartments(formModel.value.company)
         await loadData()
     }
+}
+
+const editUser = (item: any) => {
+    formModel.value = {
+        id: item.id,
+        name: item.username,
+        email: item.email,
+        cellphone: item.cellphone,
+        absence_message: item.absence_message,
+        company: item.company_info?.id || null,
+        role: item.role,
+        department: item.department?.[0]?.id ?? null,
+        password: '',
+        no_auto_assign: item.no_auto_assign ?? false,
+        see_department_tickets: item.see_department_tickets ?? false
+    }
+
+    dialog.value = true
+}
+
+const userToDelete = ref<any | null>(null)
+
+const deleteUser = async (item: any) => {
+    userToDelete.value = item
+    dialogDelete.value = true
+}
+
+const confirmDelete = async () => {
+    if (!userToDelete.value) return
+
+    try {
+        await api.delete(`/users/${userToDelete.value.id}/`)
+    } catch (error) {
+        console.error('Erro ao deletar usuário:', error)
+    } finally {
+        dialogDelete.value = false
+        userToDelete.value = null
+        await usersSearch()
+    }
+
+    dialogDelete.value = false
 }
 
 </script>
 
 <style>
 .v-data-table {
-    background-color: #32CD32;
+    background-color: #293148;
     color: white;
 }
 
 .v-data-table tbody tr:nth-child(even) {
-    background-color: #006400;
+    background-color: #5173b8;
     color: white;
 }
 

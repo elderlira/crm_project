@@ -129,7 +129,7 @@ import CarbonCalendar from '~icons/carbon/calendar'
 
 const atendentCardItens = ref([
     {
-        title: 'Plaug-in',
+        title: 'Plug-in',
         subtitle: 'Configurar os plug-in',
         color: 'white',
         size: '2em',

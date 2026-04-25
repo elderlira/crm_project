@@ -26,13 +26,24 @@ export const useAuthStore = defineStore("auth", {
       )
     },
 
-    logout() {
-      this.token = null
-      this.user = null
-  
-      localStorage.removeItem("access_token")
-      localStorage.removeItem("refresh_token")
-      localStorage.removeItem("user")
+    async logout() {
+      try {
+        const refresh = localStorage.getItem("refresh_token")
+    
+        await api.post("/auth/logout/", {
+          refresh_token: refresh
+        })
+    
+        this.token = null
+        this.user = null
+    
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("refresh_token")
+        localStorage.removeItem("user")
+    
+      } catch (error) {
+        console.error("Logout failed:", error)
+      }
     },
 
     async loadUser() {
